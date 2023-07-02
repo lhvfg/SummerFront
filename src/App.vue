@@ -11,6 +11,11 @@ import Child from "./views/Child.vue"
 </template>
 
 <style>
+* {
+            padding: 0;
+            margin: 0;
+            font-family: Arial, Helvetica, sans-serif;
+        }
 	.Main-container {
 		display: flex;
 		justify-content: center;
