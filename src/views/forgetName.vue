@@ -14,7 +14,7 @@ const Request = axios.create({
     timeout: 3000,
     withCredentials: true,
 });
-let codeRequest = 'get code';
+let codeRequest = ref('get code');
 let passwordValidationText = '';
 const timeCheck = ref(false);
 const waitTime = 10;
@@ -63,10 +63,13 @@ function getCode() {
                         message: "验证码已发送至注册邮箱,300秒后过期!" + waitTime + "秒后可重新发送",
                         duration: 3000,
                     });
-                    timeCheck.value = !timeCheck.value;
-                    codeRequest = 'wait';
+                    timeCheck.value = true;
+                    codeRequest.value = 'wait';
+                    console.log("按钮失效");
                     setTimeout(() => {
-                        timeCheck.value = !timeCheck.value;
+                        timeCheck.value = false;
+                        console.log("按钮恢复");
+                        codeRequest.value = 'get code';
                     }, waitTime * 1000);
                 }
 
@@ -94,7 +97,7 @@ function getCode() {
                             <input v-model="username" type="text" placeholder="Username" />
                         </li>
                         <li>
-                            <input v-model="code" type="text" placeholder="Email" />
+                            <input v-model="code" type="text" placeholder="code" />
                             <button
                                 style="background-color: white;width: 68px;height: 30px;border-radius: 5px;margin-left: 25px;font-size: 15px;"
                                 @click="getCode" :disabled="timeCheck">{{ codeRequest }}</button>
