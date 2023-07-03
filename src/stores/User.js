@@ -4,7 +4,12 @@ import axios from "axios";
 export const useUserStore = defineStore(
     "User", {
         state: () => ({
-            username: "Default"
+            username: "Default",
+            todayNum: 0,
+            allNum: 0,
+            todayTime: "0",
+            allTime: "0",
+            teamId: null,
         }),
         getters: {
             //computed

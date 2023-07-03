@@ -23,22 +23,22 @@ const validUsername = ref(false);
 const validPassword = ref(false);
 const validEmail = ref(false);
 
-const Register = axios.create({
+const Request = axios.create({
     timeout: 3000,
     withCredentials: true,
 });
 
-let usernameValidationText = 'Username should be 1-12 English characters or numbers'
+let usernameValidationText = 'Username should be 1-12 Chinese or English characters or numbers'
 let passwordValidationText = 'Password should be English characters or numbers more than 8 words and within 15 words';
 let EmailValidationText = 'Please input your QQ-Email in the correct format';
 
 
 function checkUsername(value) {
-    const regex = /^[a-zA-Z0-9]{1,12}$/;
+    const regex = /^[a-zA-Z0-9\u4e00-\u9fa5]{1,12}$/;
     validUsername.value = regex.test(value);
     usernameValidationText = validUsername.value ?
         'right!' :
-        'Username should be 1-12 English characters or numbers';
+        'Username should be 1-12 Chinese or English characters or numbers';
 }
 
 function checkPassword(value) {
@@ -60,23 +60,28 @@ function checkEmail(value) {
 function handleRegister() {
     //注册合法
     if (validUsername.value && validPassword.value && validEmail.value) {
-        const _username = username.value.trim(); //trim()方法用于处理空格
+        const _username = usernameNew.value.trim(); //trim()方法用于处理空格
+        console.log("姓名" + _username);
+        console.log("密码" + passwordNew.value);
+        console.log("邮箱" + Email.value);
         //发送请求
         let request = {
-            username: _username,
-            password: password.value,
-            Email: Email.value,
+            userName: _username,
+            password: passwordNew.value,
+            email: Email.value,
         };
-        Register.post("http://localhost:8080/register", request).then(
+        Request.post("http://localhost:8080/register", request).then(
             (res) => {
                 console.log(res);
                 if (res.data.status == "registerSucceed") {
-                    localStorage.setItem("username", res.data.username);
-                    // 本地、pinia存储用户名
-                    localStorage.setItem("username", _username);
-                    userStore.username = _username;
-                    //清空内容
-                    clearForm();
+                    //清空内容,切换至登录界面
+                    toggleForm();
+                    //成功通知
+                    ElMessage({
+                        type: "success",
+                        message: "注册成功！",
+                        duration: 2000,
+                    });
                     setTimeout(() => {
                         router.push("/");
                     }, 500);
@@ -87,12 +92,78 @@ function handleRegister() {
                         duration: 2000,
                     });
                 }
+                else if (res.data.status == "nullAgainst") {
+                    ElMessage({
+                        type: "error",
+                        message: "传输出错！注册信息存在空值",
+                        duration: 2000,
+                    });
+                }
             })
     }
 }
 
 function handleLogin() {
-    // Implement login logic here
+    const _username = username.value.trim(); //trim()方法用于处理空格
+    //非空
+    if (_username != null && password != null) {
+        //发送请求
+        let request = {
+            userName: _username,
+            password: password.value,
+        };
+        Request.post("http://localhost:8080/login", request).then(
+            (res) => {
+                console.log(res);
+                if (res.data.status == "loginSucceed") {
+                    // 本地、pinia存储用户名等用户信息
+                    localStorage.setItem("username", _username);
+                    localStorage.setItem("todayNum", res.data.todayNum);
+                    localStorage.setItem("allNum", res.data.allNum);
+                    localStorage.setItem("todayTime", res.data.todayTime);
+                    localStorage.setItem("allTime", res.data.allTime);
+                    localStorage.setItem("teamId", res.data.teamId);
+
+                    userStore.username = _username;
+                    userStore.todayNum = res.data.todayNum;
+                    userStore.allNum = res.data.allNum;
+                    userStore.todayTime = res.data.todayTime;
+                    userStore.allTime = res.data.allTime;
+                    userStore.teamId = res.data.teamId;
+                    //清空内容
+                    clearForm();
+                    setTimeout(() => {
+                        router.push("/main");
+                    }, 100);
+                    //成功通知
+                    ElMessage({
+                        type: "success",
+                        message: _username + "，好久不见！",
+                        duration: 2000,
+                    });
+                } else if (res.data.status == "PasswordWrong") {
+                    ElMessage({
+                        type: "error",
+                        message: "密码错误",
+                        duration: 2000,
+                    });
+                }
+                else if (res.data.status == "UserNotExist") {
+                    ElMessage({
+                        type: "error",
+                        message: "用户不存在",
+                        duration: 2000,
+                    });
+                }
+            })
+    }
+    else {
+        ElMessage({
+            type: "error",
+            message: "用户名或密码不能为空！",
+            duration: 2000,
+        });
+    }
 }
 
 function toggleForm() {

@@ -14,6 +14,12 @@ const router = createRouter({
                 import ("../views/forgetName.vue"),
         },
         {
+            path: "/main",
+            name: "MainPage",
+            component: () =>
+                import ("../views/Main.vue"),
+        },
+        {
             path: "/",
             redirect: {
                 name: "login",
