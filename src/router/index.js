@@ -5,7 +5,7 @@ const router = createRouter({
             path: "/login",
             name: "login",
             component: () =>
-                import ("../views/Register_login.vue"),
+                import ("../views/Register_login/Register_login.vue"),
         },
         {
             path: "/forget",

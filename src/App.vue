@@ -1,8 +1,7 @@
 <script setup>
 import {ref,reactive} from 'vue'
 import { RouterLink, RouterView } from "vue-router";
-import SignIn from './views/SignIn.vue';
-import Child from "./views/Child.vue"
+
 
 </script>
 
