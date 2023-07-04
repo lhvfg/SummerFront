@@ -7,8 +7,8 @@ import { ElMessage } from "element-plus";
 
 const passwordNew = ref('');
 const username = ref('');
-const validPassword = ref('');
-const code = '';
+const validPassword = ref(false);
+const code = ref('');
 const router = useRouter();
 const Request = axios.create({
     timeout: 3000,
@@ -18,6 +18,7 @@ let codeRequest = ref('get code');
 let passwordValidationText = '';
 const timeCheck = ref(false);
 const waitTime = 10;
+let _username = '';
 
 function checkPassword(value) {
     const regex = /^[a-zA-Z0-9]{8,15}$/;
@@ -28,9 +29,9 @@ function checkPassword(value) {
 }
 
 function clearForm() {
-    Email.value = '';
+    code.value = '';
     username.value = '';
-    password.value = '';
+    passwordNew.value = '';
 }
 
 function back() {
@@ -41,7 +42,7 @@ function back() {
 }
 
 function getCode() {
-    const _username = username.value.trim(); //trim()方法用于处理空格
+    _username = username.value.trim(); //trim()方法用于处理空格
     const regex = /^[a-zA-Z0-9\u4e00-\u9fa5]{1,12}$/;
     if (regex.test(_username)) {
         let request = {
@@ -85,13 +86,62 @@ function getCode() {
     }
 }
 
+function handleChangePassword() {
+    if (validPassword.value) {
+        let request = {
+            requestType: "changePasswordTest",
+            userName: _username,
+            password: passwordNew.value,
+            code: code.value,
+        };
+        Request.post("http://localhost:8080/changePassword", request).then(
+            (res) => {
+                console.log(res);
+                if (_username == null) {
+                    ElMessage({
+                        type: "error",
+                        message: "异常刷新，请重新获取验证码",
+                        duration: 2000,
+                    });
+                }
+                else if (res.data.status == "changePasswordSucceed") {
+                    //清空内容,切换至登录界面
+                    clearForm();
+                    setTimeout(() => {
+                        router.push("/");
+                    }, 500);
+                    //成功通知
+                    ElMessage({
+                        type: "success",
+                        message: _username + ",修改密码成功！",
+                        duration: 2000,
+                    });
+                }
+                else if (res.data.status == "codaWrong") {
+                    ElMessage({
+                        type: "error",
+                        message: "验证码错误",
+                        duration: 2000,
+                    });
+                }
+                else if (res.data.status == "changePasswordSucceed") {
+                    ElMessage({
+                        type: "error",
+                        message: "验证码已过期",
+                        duration: 2000,
+                    });
+                }
+            })
+
+    }
+}
 </script>
 <template>
     <div style="width: 98vw;height: 100vw;background-color: #d7daca;">
-        <div class="main short">
+        <div class="main tall">
             <div class="new-box mid">
                 <div class="title">change password</div>
-                <form @submit.prevent="handleRegister">
+                <form @submit.prevent="handleChangePassword">
                     <ul>
                         <li>
                             <input v-model="username" type="text" placeholder="Username" />
@@ -103,7 +153,7 @@ function getCode() {
                                 @click="getCode" :disabled="timeCheck">{{ codeRequest }}</button>
                         </li>
                         <li>
-                            <input v-model="passwordNew" type="password" placeholder="Password"
+                            <input v-model="passwordNew" type="password" placeholder="New Password"
                                 @keyup="checkPassword(passwordNew)" />
                         </li>
                         <li class="passwordjudge" :class="{ 'wrong': !validPassword, 'right': validPassword }">
