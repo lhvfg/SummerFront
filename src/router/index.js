@@ -20,6 +20,18 @@ const router = createRouter({
                 import ("../views/Main.vue"),
         },
         {
+            path: "/addword",
+            name: "addWord",
+            component: () =>
+                import ("../views/addWord.vue"),
+        },
+        {
+            path: "/addBook",
+            name: "addBook",
+            component: () =>
+                import ("../views/addBook.vue"),
+        },
+        {
             path: "/",
             redirect: {
                 name: "login",
