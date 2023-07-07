@@ -4,7 +4,8 @@ import axios from "axios";
 export const useUserStore = defineStore(
     "User", {
         state: () => ({
-            username: "Default",
+            userId: null,
+            userName: "Default",
             todayNum: 0,
             allNum: 0,
             todayTime: "0",
@@ -14,7 +15,7 @@ export const useUserStore = defineStore(
         getters: {
             //computed
             WelcomeUser: (state) => {
-                return "欢迎你的到来!" + state.username;
+                return "欢迎你的到来!" + state.userName;
             },
             RandomNum: () => {
                 Math.floor(Math.random() * 10) + 1;

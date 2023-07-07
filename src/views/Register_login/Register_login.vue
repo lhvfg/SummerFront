@@ -1,6 +1,4 @@
 <script setup>
-//import {checkUsername ,checkPassword,checkEmail} from "./composables/useCheck";
-//import {handleRegister , handleLogin} from "./composables/usehandle";
 import { ref, reactive } from 'vue';
 import { useRouter } from "vue-router";
 import axios from "axios";
@@ -117,14 +115,16 @@ function handleLogin() {
                 console.log(res);
                 if (res.data.status == "loginSucceed") {
                     // 本地、pinia存储用户名等用户信息
-                    localStorage.setItem("username", _username);
+                    localStorage.setItem("userName", _username);
                     localStorage.setItem("todayNum", res.data.todayNum);
                     localStorage.setItem("allNum", res.data.allNum);
                     localStorage.setItem("todayTime", res.data.todayTime);
                     localStorage.setItem("allTime", res.data.allTime);
                     localStorage.setItem("teamId", res.data.teamId);
+                    localStorage.setItem("userId", res.data.userId);
 
-                    userStore.username = _username;
+                    userStore.userId = res.data.userId;
+                    userStore.userName = _username;
                     userStore.todayNum = res.data.todayNum;
                     userStore.allNum = res.data.allNum;
                     userStore.todayTime = res.data.todayTime;
