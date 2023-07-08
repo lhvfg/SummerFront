@@ -8,8 +8,8 @@ import { ElMessage } from "element-plus";
 const userStore = useUserStore();
 const router = useRouter();
 const words = ref([]);
-const dis = ref(false);
-const validBookName = ref('false');
+const dis = ref([]);
+const validBookName = ref(false);
 let booknameValidationText = "Please enter the book name"
 let centerDialogVisible = ref(false)
 const bookName = ref('');
@@ -66,8 +66,8 @@ function checkBookname() {
 
 }
 
-function choose(id) {
-    if (dis.value) {
+function choose(i,id) {
+    if (dis.value[i]) {
         console.log(id + '号单词被选中');
         checkedWord.push(id);
         console.log(checkedWord);
@@ -158,8 +158,8 @@ function createBook() {
                 {{ booknameValidationText }}
             </li>
             <ul>
-                <li v-for="word in words">
-                    {{ word.spell }} <input v-model="dis" type="checkbox" @change="choose(word.id)" />
+                <li v-for="(word,index) in words">
+                    {{ word.spell }} <input v-model="dis[index]" type="checkbox" @change="choose(index,word.id)" />
                 </li>
             </ul>
             <span>是否共享单词书</span><input v-model="hide" type="checkbox" />
