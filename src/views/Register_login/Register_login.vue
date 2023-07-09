@@ -124,6 +124,7 @@ function handleLogin() {
                     localStorage.setItem("userId", res.data.userId);
 
                     userStore.userId = res.data.userId;
+                    console.log(userStore.userId);
                     userStore.userName = _username;
                     userStore.todayNum = res.data.todayNum;
                     userStore.allNum = res.data.allNum;

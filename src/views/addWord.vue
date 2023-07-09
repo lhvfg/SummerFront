@@ -64,7 +64,7 @@ onMounted(() => {
         (res) => {
             console.log(res);
             books.value = res.data.bookList;
-            books.value = books.value.filter((item) => { return item.hide != 1 });
+            books.value = books.value.filter((item) => { return item.hide != 1||item.userId==localStorage.getItem("userId") });
             console.log(books.value);
         })
 })
