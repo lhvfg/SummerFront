@@ -11,6 +11,7 @@ export const useUserStore = defineStore(
             todayTime: "0",
             allTime: "0",
             teamId: null,
+            chooseBookId: null,
         }),
         getters: {
             //computed

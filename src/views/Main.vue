@@ -15,6 +15,7 @@ const Request = axios.create({
     withCredentials: true,
 });
 var flag;
+let request;
 const form = reactive({
     name: '',
     region: [],
@@ -26,10 +27,11 @@ const form = reactive({
     desc: '',
 })
 const bookNames = ref([])
+
 function checkName() {
     clearTimeout(flag);
     flag = setTimeout(() => {
-        let result = bookNames.value.find(value=>value==bookName.value)
+        let result = bookNames.value.find(value => value == bookName.value)
         console.log(result);
         if (result == undefined) {
             validName.value = false;
@@ -56,6 +58,53 @@ function changeBookName(newName) {
     validName.value = true;
     validNameText.value = "可用！"
 }
+function chooseBook() {
+    if (validName.value) {
+        dialogFormVisible.value = false;
+        if (localStorage.getItem("chooseBookId") == null) {
+             request = {
+                requestType: "chooseBookAdd",
+                bookId: books.value.find(item => item.bookName == bookName.value).id,
+                userId: localStorage.getItem("userId")
+            }
+
+        }
+        else {
+            request = {
+                requestType: "chooseBookUpdate",
+                bookId: books.value.find(item => item.bookName == bookName.value).id,
+                userId: localStorage.getItem("userId")
+            }
+        }
+        Request.post("http://localhost:8080/chooseBook", request).then(
+            (res) => {
+                console.log(res);
+                if (res.data.status == "chooseSucceed") {
+                    ElMessage({
+                        type: "success",
+                        message: "选择成功！",
+                        duration: 2000,
+                    });
+                    clearAll();
+                }
+                else {
+                    ElMessage({
+                        type: "error",
+                        message: "出错了！",
+                        duration: 2000,
+                    });
+                }
+            })
+    }
+    else {
+        ElMessage({
+            type: "error",
+            message: "请选择合法的单词书",
+            duration: 2000,
+        });
+    }
+}
+
 
 onMounted(() => {
     let request = {
@@ -88,6 +137,7 @@ onMounted(() => {
         <el-form :model="form">
             <el-form-item label="搜索名称" :label-width="formLabelWidth">
                 <el-input v-model="bookName" autocomplete="off" placeholder="用名称搜索" @keyup="checkName()" />
+                <br>
                 <span :class="{ 'wrong': !validName, 'right': validName }">{{ validNameText }}</span>
             </el-form-item>
             <el-form-item label="列表选择" :label-width="formLabelWidth">
@@ -100,7 +150,7 @@ onMounted(() => {
         <template #footer>
             <span class="dialog-footer">
                 <el-button @click="dialogFormVisible = false">Cancel</el-button>
-                <el-button type="primary" @click="dialogFormVisible = false">
+                <el-button type="primary" @click="chooseBook">
                     Confirm
                 </el-button>
             </span>
@@ -108,6 +158,12 @@ onMounted(() => {
     </el-dialog>
 </template>
 <style scoped>
+.wrong,
+.right {
+    width: 400px;
+    margin-bottom: -13px;
+}
+
 .wrong {
     color: hotpink;
 }

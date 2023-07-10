@@ -122,6 +122,7 @@ function handleLogin() {
                     localStorage.setItem("allTime", res.data.allTime);
                     localStorage.setItem("teamId", res.data.teamId);
                     localStorage.setItem("userId", res.data.userId);
+                    localStorage.setItem("chooseBookId", res.data.bookId);
 
                     userStore.userId = res.data.userId;
                     console.log(userStore.userId);
@@ -131,6 +132,7 @@ function handleLogin() {
                     userStore.todayTime = res.data.todayTime;
                     userStore.allTime = res.data.allTime;
                     userStore.teamId = res.data.teamId;
+                    userStore.chooseBookId = res.data.bookId;
                     //清空内容
                     clearForm();
                     setTimeout(() => {
