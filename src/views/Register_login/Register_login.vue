@@ -106,6 +106,8 @@ function handleLogin() {
     let yy = new Date().getFullYear();
     let mm = new Date().getMonth() + 1;
     let dd = new Date().getDate();
+    const weeks = new Array("Sun.", "Mon.", "Tues.", "Wed.", "Thur.", "Fri.", "Sat.");
+    let nowWeek = weeks[new Date().getDay()];
     //非空
     if (_username != null && password != null) {
         //发送请求
@@ -128,15 +130,17 @@ function handleLogin() {
                     localStorage.setItem("userId", res.data.userId);
                     localStorage.setItem("chooseBookId", res.data.bookId);
 
-                    userStore.userId = res.data.userId;
-                    // console.log(userStore.userId);
-                    userStore.userName = _username;
-                    userStore.todayNum = res.data.todayNum;
-                    userStore.allNum = res.data.allNum;
-                    userStore.todayTime = res.data.todayTime;
-                    userStore.allTime = res.data.allTime;
-                    userStore.teamId = res.data.teamId;
-                    userStore.chooseBookId = res.data.bookId;
+                    userStore.$patch({
+                        userId: res.data.userId,
+                        userName: _username,
+                        todayNum: res.data.todayNum,
+                        allNum: res.data.allNum,
+                        todayTime: res.data.todayTime,
+                        allTime: res.data.allTime,
+                        teamId: res.data.teamId,
+                        chooseBookId: res.data.bookId,
+                        nowDay: nowWeek,
+                    })
                     //清空内容
                     clearForm();
                     setTimeout(() => {

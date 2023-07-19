@@ -12,7 +12,13 @@ export const useUserStore = defineStore(
             allTime: "0",
             teamId: null,
             chooseBookId: null,
+            nowDay: null
         }),
+        actions: {
+            setUserId(id) {
+                this.userId = id;
+            }
+        },
         getters: {
             //computed
             WelcomeUser: (state) => {
