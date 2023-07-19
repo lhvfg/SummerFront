@@ -103,12 +103,16 @@ function handleRegister() {
 
 function handleLogin() {
     const _username = username.value.trim(); //trim()方法用于处理空格
+    let yy = new Date().getFullYear();
+    let mm = new Date().getMonth() + 1;
+    let dd = new Date().getDate();
     //非空
     if (_username != null && password != null) {
         //发送请求
         let request = {
             userName: _username,
             password: password.value,
+            lastLoginTime: yy + '-' + mm + '-' + dd
         };
         Request.post("http://localhost:8080/login", request).then(
             (res) => {
@@ -125,7 +129,7 @@ function handleLogin() {
                     localStorage.setItem("chooseBookId", res.data.bookId);
 
                     userStore.userId = res.data.userId;
-                    console.log(userStore.userId);
+                    // console.log(userStore.userId);
                     userStore.userName = _username;
                     userStore.todayNum = res.data.todayNum;
                     userStore.allNum = res.data.allNum;

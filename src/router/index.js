@@ -15,9 +15,15 @@ const router = createRouter({
         },
         {
             path: "/main",
-            name: "MainPage",
+            name: "Main",
             component: () =>
-                import ("../views/Main.vue"),
+                import ("../views/main.vue"),
+        },
+        {
+            path: "/contentManager",
+            name: "contentManager",
+            component: () =>
+                import ("../views/contentManager.vue"),
         },
         {
             path: "/addword",
