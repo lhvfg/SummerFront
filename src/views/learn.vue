@@ -18,23 +18,47 @@ const reciteWord = ref(
     [
         {
             spell: '',
-            meanings: [
+            meaning: [
                 {
-                    meaningContent:'',
-                    function:''
+                    meaningContent: '',
+                    function: ''
                 }
             ],
-            count:0,
-            notes:[''],
-            sentences:[{
-                sentenceContent:'',
-                sentenceContentMean:''
+            count: 0,
+            notes: [''],
+            sentence: [{
+                sentenceContent: '',
+                sentenceContentMean: ''
             }],
-            
+            Synonymous:[{
+                mean:{
+                    function:[''],
+                    meaning:['']
+                },
+                spell:['']
+            }],
+            Derived:[{
+                spell:'',
+                meaning: [
+                {
+                    meaningContent: '',
+                    function: ''
+                }
+            ],
+            }]
         }
     ]
 )
-
+// const meanings = ref([
+//     {
+//         meaningContent: '',
+//         function: ''
+//     }
+// ]);
+// const sentences= ref([{
+//                 sentenceContent: '',
+//                 sentenceContentMean: ''
+//             }]);
 onMounted(() => {
     let request = {
         requestType: "getWords",
@@ -46,7 +70,15 @@ onMounted(() => {
         (res) => {
             console.log(res);
             if (res.data.stauts == "reciteWords") {
-
+               reciteWord.value = res.data.reciteNewWordDates ;
+               console.log(reciteWord.value);
+            }
+            else{
+                ElMessage({
+                        type: "error",
+                        message: "出错了",
+                        duration: 2000,
+                    });
             }
         })
 })

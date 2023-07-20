@@ -22,6 +22,7 @@ const validPassword = ref(false);
 const validEmail = ref(false);
 
 const Request = axios.create({
+    baseURL:'api',
     timeout: 3000,
     withCredentials: true,
 });

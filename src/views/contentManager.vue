@@ -11,6 +11,7 @@ const books = ref([])
 const dialogFormVisible = ref(false)
 const formLabelWidth = '140px'
 const Request = axios.create({
+    baseURL:'api',
     timeout: 3000,
     withCredentials: true,
 });

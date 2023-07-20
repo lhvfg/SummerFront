@@ -11,6 +11,7 @@ const validPassword = ref(false);
 const code = ref('');
 const router = useRouter();
 const Request = axios.create({
+    baseURL:'api',
     timeout: 3000,
     withCredentials: true,
 });

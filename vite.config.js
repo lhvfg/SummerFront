@@ -24,10 +24,10 @@ export default defineConfig({
         proxy: {
             // 本地开发环境通过代理实现跨域
             '/api': {
-                target: 'http://localhost:8080',
+                target: 'http://localhost:8080/',
                 changeOrigin: true,
                 pathRewrite: {
-                    '/api': ''
+                    '^/api': ''
                 }
             }
         }

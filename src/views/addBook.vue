@@ -21,6 +21,7 @@ var flag;
 var checkedWord = new Array();
 
 const Request = axios.create({
+    baseURL:'api',
     timeout: 3000,
     withCredentials: true,
 });

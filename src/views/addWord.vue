@@ -23,6 +23,7 @@ const types = [0, 1, 2]
 let typeValue;
 let deletIndex;
 const Request = axios.create({
+    baseURL:'api',
     timeout: 3000,
     withCredentials: true,
 });
