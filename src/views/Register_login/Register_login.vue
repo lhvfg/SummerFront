@@ -5,7 +5,7 @@ import axios from "axios";
 import { useUserStore } from "../../stores/User"
 import { ElMessage } from "element-plus";
 
-const userStore = useUserStore();
+const store = useUserStore();
 const router = useRouter();
 
 const showRegister = ref(false);
@@ -109,7 +109,7 @@ function handleLogin() {
     const weeks = new Array("Sun.", "Mon.", "Tues.", "Wed.", "Thur.", "Fri.", "Sat.");
     let nowWeek = weeks[new Date().getDay()];
     //非空
-    if (_username != null && password != null) {
+    if (_username != '' && password.value != '') {
         //发送请求
         let request = {
             userName: _username,
@@ -130,7 +130,7 @@ function handleLogin() {
                     localStorage.setItem("userId", res.data.userId);
                     localStorage.setItem("chooseBookId", res.data.bookId);
 
-                    userStore.$patch({
+                    store.$patch({
                         userId: res.data.userId,
                         userName: _username,
                         todayNum: res.data.todayNum,

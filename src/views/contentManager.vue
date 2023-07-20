@@ -28,6 +28,20 @@ const form = reactive({
 })
 const bookNames = ref([])
 
+onMounted(() => {
+    let request = {
+        requestType: "chooseBookRequest",
+    };
+    Request.post("http://localhost:8080/chooseBook", request).then(
+        (res) => {
+            console.log(res);
+            books.value = res.data.bookList;
+            books.value = books.value.filter((item) => { return item.hide != 1 || item.userId == localStorage.getItem("userId") });
+            bookNames.value = books.value.map(item => item.bookName)
+            console.log(books.value);
+            console.log(bookNames.value);
+        })
+})
 function checkName() {
     clearTimeout(flag);
     flag = setTimeout(() => {
@@ -85,7 +99,7 @@ function chooseBook() {
                         message: "选择成功！",
                         duration: 2000,
                     });
-                    clearAll();
+                   // clearAll();
                 }
                 else {
                     ElMessage({
@@ -106,20 +120,7 @@ function chooseBook() {
 }
 
 
-onMounted(() => {
-    let request = {
-        requestType: "chooseBookRequest",
-    };
-    Request.post("http://localhost:8080/chooseBook", request).then(
-        (res) => {
-            console.log(res);
-            books.value = res.data.bookList;
-            books.value = books.value.filter((item) => { return item.hide != 1 || item.userId == localStorage.getItem("userId") });
-            bookNames.value = books.value.map(item => item.bookName)
-            console.log(books.value);
-            console.log(bookNames.value);
-        })
-})
+
 </script>
 <template>
     <div>

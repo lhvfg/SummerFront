@@ -3,19 +3,39 @@ import { ref, reactive, computed } from 'vue';
 import { useRouter } from "vue-router";
 import axios from "axios";
 import { useUserStore } from "../stores/User"
+import { storeToRefs } from 'pinia';
 
-
+const store = useUserStore();
+const router = useRouter();
 const learnNum = 100;
 const reciteNum = 100;
+const Request = axios.create({
+    baseURL:'/api',
+    timeout: 3000,
+    withCredentials: true,
+});
+
+const { userId } = storeToRefs(useUserStore());
+console.log(userId.value);
 
 var month = ref(new Date().getMonth() + 1);
 month.value = (month.value < 10 ? '0' : '') + month.value;
 var day = ref(new Date().getDate());
-day.value = (day.value < 10 ? '0' : '') + day.value+'  ';
+day.value = (day.value < 10 ? '0' : '') + day.value + '  ';
 const weeks = ref(["Sun.", "Mon.", "Tues.", "Wed.", "Thur.", "Fri.", "Sat."]);
 const nowDay = computed(() => weeks.value[new Date().getDay()]);
-const successive = ref(1);
 
+const successive = ref(1);
+function Learn() {
+    setTimeout(() => {
+        router.push('/learn');
+    }, 500);
+}
+function manageContent(){
+    setTimeout(() => {
+        router.push('/contentManager');
+    }, 500); 
+}
 </script>
 <template>
     <div class="allbox">

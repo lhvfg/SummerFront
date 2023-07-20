@@ -25,7 +25,7 @@ export const useUserStore = defineStore(
                 return "欢迎你的到来!" + state.userName;
             },
             RandomNum: () => {
-                Math.floor(Math.random() * 10) + 1;
+                return Math.floor(Math.random() * 10) + 1;
             },
         },
 

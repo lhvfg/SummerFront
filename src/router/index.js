@@ -38,6 +38,12 @@ const router = createRouter({
                 import ("../views/addBook.vue"),
         },
         {
+            path: "/learn",
+            name: "learn",
+            component: () =>
+                import ("../views/learn.vue"),
+        },
+        {
             path: "/",
             redirect: {
                 name: "login",

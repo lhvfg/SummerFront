@@ -18,4 +18,18 @@ export default defineConfig({
             resolvers: [ElementPlusResolver()],
         }),
     ],
+    server: {
+        //   host: "0.0.0.0", //打开显示本地地址
+        open: true, // 是否自动启动浏览器
+        proxy: {
+            // 本地开发环境通过代理实现跨域
+            '/api': {
+                target: 'http://localhost:8080',
+                changeOrigin: true,
+                pathRewrite: {
+                    '/api': ''
+                }
+            }
+        }
+    }
 })
