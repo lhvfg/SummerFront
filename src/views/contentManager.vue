@@ -100,6 +100,7 @@ function chooseBook() {
                         message: "选择成功！",
                         duration: 2000,
                     });
+                    localStorage.setItem("chooseBookId",books.value.find(item => item.bookName == bookName.value).id)
                    // clearAll();
                 }
                 else {

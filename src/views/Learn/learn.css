@@ -1,0 +1,47 @@
+* {
+    padding: 0;
+    margin: 0;
+}
+
+.top {
+    display: block;
+    overflow: hidden;
+}
+
+.outButton {
+    float: left;
+    position: relative;
+}
+
+.reciteNum {
+    float: left;
+    position: relative;
+}
+
+.functionButton {
+    float: right;
+    position: relative;
+}
+
+.spell_count {
+    display: flex;
+}
+
+.spell_count>ul {
+    display: inline;
+    list-style: none;
+}
+
+.point {
+    height: 6px;
+    width: 6px;
+    border-radius: 3px;
+}
+
+.grey {
+    background-color: gray;
+}
+
+.green {
+    background-color: rgb(107, 247, 200);
+}

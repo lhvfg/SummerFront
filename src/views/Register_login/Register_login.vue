@@ -206,7 +206,7 @@ function forget() {
 </script>
 <template>
     <div style="width: 98vw;height: 100vw;background-color: #d7daca;">
-        <div class="main" :class="{ short: !showRegister, tall: showRegister }">
+        <div class="main" :class="{ 'short': !showRegister, 'tall': showRegister }">
             <div class="new-box" :class="{ 'left': !showRegister, 'mid': showRegister }">
                 <div class="title">register</div>
                 <form @submit.prevent="handleRegister">

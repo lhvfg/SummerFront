@@ -2,10 +2,9 @@
 import { ref, reactive, onMounted } from 'vue'
 import { useRouter } from "vue-router";
 import axios from "axios";
-import { useUserStore } from "../stores/User"
 import { ElMessage } from "element-plus";
+import { storeToRefs } from 'pinia';
 
-const store = useUserStore();
 const router = useRouter();
 const Request = axios.create({
     baseURL: '/api',
@@ -13,7 +12,8 @@ const Request = axios.create({
     withCredentials: true,
 });
 const remainQuantitiy = ref(0);
-const { _userId, _bookId } = storeToRefs(useUserStore());
+const userId = localStorage.getItem("userId");
+const bookId = localStorage.getItem("chooseBookId");
 const reciteWord = ref(
     [
         {
@@ -30,55 +30,52 @@ const reciteWord = ref(
                 sentenceContent: '',
                 sentenceContentMean: ''
             }],
-            Synonymous:[{
-                mean:{
-                    function:[''],
-                    meaning:['']
+            Synonymous: [{
+                mean: {
+                    function: [''],
+                    meaning: ['']
                 },
-                spell:['']
+                spell: ['']
             }],
-            Derived:[{
-                spell:'',
+            Derived: [{
+                spell: '',
                 meaning: [
-                {
-                    meaningContent: '',
-                    function: ''
-                }
-            ],
+                    {
+                        meaningContent: '',
+                        function: ''
+                    }
+                ],
             }]
         }
     ]
 )
-// const meanings = ref([
-//     {
-//         meaningContent: '',
-//         function: ''
-//     }
-// ]);
-// const sentences= ref([{
-//                 sentenceContent: '',
-//                 sentenceContentMean: ''
-//             }]);
+let countFlag = ref([true]);
+countFlag.value[0]=true;
 onMounted(() => {
     let request = {
         requestType: "getWords",
-        userId: _userId.value,
-        bookId: _bookId.value,
+        userId: userId,
+        bookId: bookId,
 
     };
-    Request.post("http://localhost:8080/chooseBook", request).then(
+    Request.post("http://localhost:8080/recite", request).then(
         (res) => {
             console.log(res);
-            if (res.data.stauts == "reciteWords") {
-               reciteWord.value = res.data.reciteNewWordDates ;
-               console.log(reciteWord.value);
+            console.log(111);
+            if (res.data.status == "reciteWords") {
+                reciteWord.value[0] = res.data.reciteNewWordDates;
+                reciteWord.value[1] = res.data.reciteOneWordDates;
+                reciteWord.value[2] = res.data.reciteTwoWordDates;
+                console.log(reciteWord.value[0]);
+                console.log(reciteWord.value[1]);
+                console.log(reciteWord.value[2]);
             }
-            else{
+            else {
                 ElMessage({
-                        type: "error",
-                        message: "出错了",
-                        duration: 2000,
-                    });
+                    type: "error",
+                    message: "出错了",
+                    duration: 2000,
+                });
             }
         })
 })
@@ -86,30 +83,31 @@ onMounted(() => {
 <template>
     <div>
         <div class="top">
-            <button>返回</button>
-            <div>
+            <button class="outButton"><el-icon>
+                    <ArrowLeft />
+                </el-icon></button>
+            <div class="reciteNum">
                 <span>{{ remainQuantitiy }}</span><span>/</span><span>10</span>
             </div>
-            <div>
+            <div class="functionButton">
                 <button>收藏</button>
                 <button>标熟</button>
             </div>
         </div>
         <div class="mid">
             <div class="share">
-                <div>
+                <div class="spell_count">
                     <span>拼写</span>
                     <ul>
-                        <li>答对几次</li>
+                        <li class="point" :class="{'grey': !countFlag[0] , 'green': countFlag[0]}"></li>
+                        <li class="point" :class="{'grey': !countFlag[1] , 'green': countFlag[0]}"></li>
+                        <li class="point" :class="{'grey': !countFlag[2] , 'green': countFlag[0]}"></li>
                     </ul>
+                </div>
+                <div>
                     <ul>
                         <li>
-                            <span>
-                                词性
-                            </span>
-                            <span>
-                                释义
-                            </span>
+                            <span>词性</span><span>释义</span>
                         </li>
                     </ul>
                 </div>
@@ -188,4 +186,6 @@ onMounted(() => {
 
     </div>
 </template>
-<style scoped></style>
+<style scoped>
+@import './learn.css';
+</style>
