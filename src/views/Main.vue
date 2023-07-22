@@ -15,8 +15,6 @@ const Request = axios.create({
     withCredentials: true,
 });
 
-const { userId } = storeToRefs(useUserStore());
-console.log(userId.value);
 
 var month = ref(new Date().getMonth() + 1);
 month.value = (month.value < 10 ? '0' : '') + month.value;

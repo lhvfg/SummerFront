@@ -11,13 +11,13 @@ const Request = axios.create({
     timeout: 3000,
     withCredentials: true,
 });
-const remainQuantitiy = ref(0);
+
 const userId = localStorage.getItem("userId");
 const bookId = localStorage.getItem("chooseBookId");
-let maxNum = ref(10);
 const reciteWord = ref(
     [[
         {
+            wordId:0,
             spell: '',
             meaning: [
                 {
@@ -31,46 +31,68 @@ const reciteWord = ref(
                 sentenceContent: '',
                 sentenceContentMean: ''
             }],
-            Synonymous: [{
-                mean: {
-                    function: [''],
-                    meaning: ['']
-                },
+            synonymous: [{
+                meaning: '',
+                function: '',
                 spell: ['']
             }],
             derived: [{
                 spell: '',
-                meaning: [
+                meanings: [
                     {
-                        meaningContent: '',
+                        content: '',
                         function: ''
                     }
                 ],
-            }]
+            }],
+            star:false
         }
     ]]
 )
-let countFlag = ref([false]);
-
-let len = ref([]);
-let nowNum = 1;
-let nowSpell = '';
-let nowCount = 0;
-const question = ref(true);
-const tip1Valid = ref(false);
-const meaningValid = ref(false);
 const deriveWords = ref([{
     spell: '',
     meaning: [
         {
-            meaningContent: '',
-            function: ''
+            content: '',
+            function: '',
+            id: 0,
+            wordId: 0
         }
     ],
 }])
+const sentences = ref([{
+    content: '',
+    contentMean: ''
+}])
 
+let countFlag = ref([false]);
+let maxNum = ref(10);
+let len = ref([]);
+//当前在背的是该count中的几个，从零开始
+let nowNum = 0;
+//现在在背的单词的拼写
+let nowSpell = '';
+//当前在背的是count几
+let nowCount = 0;
+//当前背完了几个单词
+let recitedWordNum = ref(0);
+let date = new Date();
+let startTime;
+let wordId;
+
+const question = ref(true);
+const tip1Valid = ref(false);
+const tip2Valid = ref(false);
+const meaningValid = ref(false);
+const meanChose = ref(false);
+const sentenceValid = ref(false);
+const sentenceChineseValid = ref(false);
+const prompt = ref(false);
+const answerValid = ref(false);
+const starValid = ref(false);
 
 onMounted(() => {
+    startTime =parseInt(new Date().getTime() / 1000);
     let request = {
         requestType: "getWords",
         userId: userId,
@@ -94,12 +116,7 @@ onMounted(() => {
                 if (len[0] + len[1] + len[2] < 10) {
                     maxNum.value = len[0] + len[1] + len[2];
                 }
-                nowSpell = reciteWord.value[0][0].spell;
-                nowCount = reciteWord.value[0][0].count;
-               // handleDerive(reciteWord.value[0][0].Derived);
-                console.log(reciteWord.value[0][0].derived);
-                handleCount(nowCount);
-                handleShow();
+                handleData(reciteWord);
             }
             else {
                 ElMessage({
@@ -110,7 +127,18 @@ onMounted(() => {
             }
         })
 })
-
+function handleData(reciteWord) {
+    nowCount = reciteWord.value[nowCount][nowNum].count;
+    nowSpell = reciteWord.value[nowCount][nowNum].spell;
+    wordId = reciteWord.value[nowCount][nowNum].wordId;
+    starValid.value = reciteWord.value[nowCount][nowNum].star;
+    console.log(reciteWord.value[nowCount][nowNum].derived[0].spell);
+    console.log(reciteWord.value[nowCount][nowNum].derived[0].meanings);
+    handleDerive(reciteWord.value[nowCount][nowNum].derived);
+    handleCount(nowCount);
+    handleSentence(reciteWord.value[nowCount][nowNum].sentence)
+    handleShow();
+}
 function handleCount(count) {
     for (var i = 0; i < count; i++) { countFlag.value[i] = true }
 }
@@ -118,28 +146,126 @@ function handleShow() {
     if (question) {
         if (nowCount == 0) {
             tip1Valid.value = true;
+            tip2Valid.value = false;
             meaningValid.value = false;
+            meanChose.value = true;
+            sentenceValid.value = false;
+            prompt.value = false;
+            answerValid.value = false;
         }
     }
 }
-// function handleDerive(derives) {
-//     for (var i = 0; i < derives.length; i++) 
-//     { 
-//         deriveWords[i].spell = derives[i]
-//      }
-// }
+function handleDerive(derives) {
+    deriveWords.value = derives.map(
+        (derive) => ({
+            spell: derive.spell,
+            meaning: derive.meanings
+        })
+    )
+    console.log(deriveWords.value);
+}
+function handleSentence(s) {
+    sentences.value = s.map(
+        (sentence) => ({
+            content: sentence.content,
+            contentMean: sentence.contentMean
+        })
+    )
+}
+function reciteOver() {
+    router.push('/main');
+    let seconds = Math.floor(parseInt(new Date().getTime() / 1000) - startTime);
+    let request = {
+        requestType: "reciteOver",
+        time: seconds,
+        number: recitedWordNum.value,
+        userId: userId
+    }
+    console.log(seconds);
+    Request.post("http://localhost:8080/recite", request).then(
+        (res) => {
+            console.log(res);
+            if (res.data.status == "timeNumChanged") {
+                ElMessage({
+                    type: "success",
+                    message: "背诵数据已更新！",
+                    duration: 2000,
+                });
+            }
+            else {
+                ElMessage({
+                    type: "error",
+                    message: "出错了",
+                    duration: 2000,
+                });
+            }
+        })
+}
+function deleteStar(){
+    let request = {
+        requestType: "deleteStar",
+        userId: userId,
+        wordId: wordId
+    };
+    Request.post("http://localhost:8080/recite", request).then(
+        (res) => {
+            console.log(res);
+            if (res.data.status == "deleteStar") {
+                ElMessage({
+                    type: "success",
+                    message: "已从生词本中去除",
+                    duration: 2000,
+                });
+                starValid.value = false;
+            }
+            else {
+                ElMessage({
+                    type: "error",
+                    message: "出错了",
+                    duration: 2000,
+                });
+            }
+        })
+}
+function addStar(){
+    let request = {
+        requestType: "addStar",
+        userId: userId,
+        wordId: wordId
+    };
+    Request.post("http://localhost:8080/recite", request).then(
+        (res) => {
+            console.log(res);
+            if (res.data.status == "addStar") {
+                ElMessage({
+                    type: "success",
+                    message: "已添加进生词本",
+                    duration: 2000,
+                });
+                starValid.value = true;
+            }
+            else {
+                ElMessage({
+                    type: "error",
+                    message: "出错了",
+                    duration: 2000,
+                });
+            }
+        })
+}
 </script>
 <template>
     <div>
         <div class="top">
-            <button class="outButton"><el-icon>
+            <button class="outButton" @click="reciteOver"><el-icon>
                     <ArrowLeft />
                 </el-icon></button>
             <div class="reciteNum">
-                <span>{{ remainQuantitiy }}</span><span>/</span><span>{{ maxNum }}</span>
+                <span>{{ recitedWordNum }}</span><span>/</span><span>{{ maxNum }}</span>
             </div>
             <div class="functionButton">
-                <button>收藏</button>
+                <button v-show="starValid" @click="deleteStar">已收藏</button>
+                <button v-show="!starValid" @click="addStar">收藏</button>
                 <button>标熟</button>
             </div>
         </div>
@@ -163,25 +289,19 @@ function handleShow() {
             </div>
             <div class="question">
                 <span v-show="tip1Valid">先回想词义再选择，想不起来「看答案」</span>
-                <ul>
-                    <li >释义选项</li>
+                <ul v-show="meanChose">
+                    <li v-for="deriveWord in deriveWords">
+                        {{ deriveWord.meaning[0].function }}{{ deriveWord.meaning[0].content }}</li>
                 </ul>
-                <span>
-                    英文例句
-                </span>
-                <button>提示一下</button>
-                <span>tip2</span>
+                <ul v-show="sentenceValid">
+                    <li>{{ sentences[0].content }}</li>
+                    <li v-show="sentenceChineseValid">{{ sentences[0].contentMean }}</li>
+                </ul>
+                <button v-show="prompt">提示一下</button>
+                <span v-show="tip2Valid">tip2</span>
             </div>
 
-            <div class="answer">
-                <span>
-
-                </span>
-
-                <div>
-                    <span>例句</span>
-                    <span>释义</span>
-                </div>
+            <div v-show="answerValid" class="answer">
                 <div>
                     <ul>
                         <li>
@@ -215,21 +335,25 @@ function handleShow() {
             </div>
         </div>
         <div class="buttom">
-            <button>
-                <span>看答案</span>
-            </button>
-            <button v-show="!question">
-                <span>下一词</span>
-            </button>
-            <button v-show="!question">
-                <span>记错了</span>
-            </button>
-            <button v-show="question">
-                <span>认识</span>
-            </button>
-            <button v-show="question">
-                <span>不认识</span>
-            </button>
+            <div v-show="question">
+                <button v-show="nowCount == 0">
+                    <span>看答案</span>
+                </button>
+                <button v-show="nowCount != 0">
+                    <span>认识</span>
+                </button>
+                <button v-show="nowCount != 0">
+                    <span>不认识</span>
+                </button>
+            </div>
+            <div v-show="!question">
+                <button>
+                    <span>下一词</span>
+                </button>
+                <button>
+                    <span>记错了</span>
+                </button>
+            </div>
         </div>
 
 
