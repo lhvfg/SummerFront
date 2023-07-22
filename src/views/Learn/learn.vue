@@ -14,8 +14,9 @@ const Request = axios.create({
 const remainQuantitiy = ref(0);
 const userId = localStorage.getItem("userId");
 const bookId = localStorage.getItem("chooseBookId");
+let maxNum = ref(10);
 const reciteWord = ref(
-    [
+    [[
         {
             spell: '',
             meaning: [
@@ -25,7 +26,7 @@ const reciteWord = ref(
                 }
             ],
             count: 0,
-            notes: [''],
+            notes: [{ content: '' }],
             sentence: [{
                 sentenceContent: '',
                 sentenceContentMean: ''
@@ -37,7 +38,7 @@ const reciteWord = ref(
                 },
                 spell: ['']
             }],
-            Derived: [{
+            derived: [{
                 spell: '',
                 meaning: [
                     {
@@ -47,16 +48,33 @@ const reciteWord = ref(
                 ],
             }]
         }
-    ]
+    ]]
 )
-let countFlag = ref([true]);
-countFlag.value[0]=true;
+let countFlag = ref([false]);
+
+let len = ref([]);
+let nowNum = 1;
+let nowSpell = '';
+let nowCount = 0;
+const question = ref(true);
+const tip1Valid = ref(false);
+const meaningValid = ref(false);
+const deriveWords = ref([{
+    spell: '',
+    meaning: [
+        {
+            meaningContent: '',
+            function: ''
+        }
+    ],
+}])
+
+
 onMounted(() => {
     let request = {
         requestType: "getWords",
         userId: userId,
         bookId: bookId,
-
     };
     Request.post("http://localhost:8080/recite", request).then(
         (res) => {
@@ -69,6 +87,19 @@ onMounted(() => {
                 console.log(reciteWord.value[0]);
                 console.log(reciteWord.value[1]);
                 console.log(reciteWord.value[2]);
+                for (var i = 0; i < 3; i++) {
+                    len[i] = reciteWord.value[i].length;
+                }
+                //明确要背的数量
+                if (len[0] + len[1] + len[2] < 10) {
+                    maxNum.value = len[0] + len[1] + len[2];
+                }
+                nowSpell = reciteWord.value[0][0].spell;
+                nowCount = reciteWord.value[0][0].count;
+               // handleDerive(reciteWord.value[0][0].Derived);
+                console.log(reciteWord.value[0][0].derived);
+                handleCount(nowCount);
+                handleShow();
             }
             else {
                 ElMessage({
@@ -79,6 +110,24 @@ onMounted(() => {
             }
         })
 })
+
+function handleCount(count) {
+    for (var i = 0; i < count; i++) { countFlag.value[i] = true }
+}
+function handleShow() {
+    if (question) {
+        if (nowCount == 0) {
+            tip1Valid.value = true;
+            meaningValid.value = false;
+        }
+    }
+}
+// function handleDerive(derives) {
+//     for (var i = 0; i < derives.length; i++) 
+//     { 
+//         deriveWords[i].spell = derives[i]
+//      }
+// }
 </script>
 <template>
     <div>
@@ -87,7 +136,7 @@ onMounted(() => {
                     <ArrowLeft />
                 </el-icon></button>
             <div class="reciteNum">
-                <span>{{ remainQuantitiy }}</span><span>/</span><span>10</span>
+                <span>{{ remainQuantitiy }}</span><span>/</span><span>{{ maxNum }}</span>
             </div>
             <div class="functionButton">
                 <button>收藏</button>
@@ -97,14 +146,14 @@ onMounted(() => {
         <div class="mid">
             <div class="share">
                 <div class="spell_count">
-                    <span>拼写</span>
+                    <span>{{ nowSpell }}</span>
                     <ul>
-                        <li class="point" :class="{'grey': !countFlag[0] , 'green': countFlag[0]}"></li>
-                        <li class="point" :class="{'grey': !countFlag[1] , 'green': countFlag[0]}"></li>
-                        <li class="point" :class="{'grey': !countFlag[2] , 'green': countFlag[0]}"></li>
+                        <li class="point" :class="{ 'grey': !countFlag[2], 'green': countFlag[2] }"></li>
+                        <li class="point" :class="{ 'grey': !countFlag[1], 'green': countFlag[1] }"></li>
+                        <li class="point" :class="{ 'grey': !countFlag[0], 'green': countFlag[0] }"></li>
                     </ul>
                 </div>
-                <div>
+                <div v-show="meaningValid">
                     <ul>
                         <li>
                             <span>词性</span><span>释义</span>
@@ -113,9 +162,9 @@ onMounted(() => {
                 </div>
             </div>
             <div class="question">
-                <span>tip1</span>
+                <span v-show="tip1Valid">先回想词义再选择，想不起来「看答案」</span>
                 <ul>
-                    <li>释义选项</li>
+                    <li >释义选项</li>
                 </ul>
                 <span>
                     英文例句
@@ -169,16 +218,16 @@ onMounted(() => {
             <button>
                 <span>看答案</span>
             </button>
-            <button>
+            <button v-show="!question">
                 <span>下一词</span>
             </button>
-            <button>
+            <button v-show="!question">
                 <span>记错了</span>
             </button>
-            <button>
+            <button v-show="question">
                 <span>认识</span>
             </button>
-            <button>
+            <button v-show="question">
                 <span>不认识</span>
             </button>
         </div>
