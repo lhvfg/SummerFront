@@ -85,7 +85,7 @@ function manageContent(){
 }
 
 .allbox {
-    height: 46.97vw;
+    height: 68.97vw;
     display: flex;
     flex-direction: column;
     align-items: center;

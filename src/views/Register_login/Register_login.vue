@@ -1,5 +1,5 @@
 <script setup>
-import { ref, reactive } from 'vue';
+import { ref, reactive,onMounted } from 'vue';
 import { useRouter } from "vue-router";
 import axios from "axios";
 import { useUserStore } from "../../stores/User"
@@ -22,7 +22,7 @@ const validPassword = ref(false);
 const validEmail = ref(false);
 
 const Request = axios.create({
-    baseURL:'api',
+    baseURL: 'api',
     timeout: 3000,
     withCredentials: true,
 });
@@ -56,6 +56,26 @@ function checkEmail(value) {
         'Please input your QQ-Email in the correct format';
 }
 
+onMounted(() => {
+    Request.get("http://localhost:8080/clearSession").then(
+        (res) => {
+            console.log(res);
+            if (res.data.status == 'clear') {
+                ElMessage({
+                        type: "success",
+                        message: "登录认证已重置",
+                        duration: 2000,
+                    });
+            }
+            else if (res.data.status != 'new'){
+                ElMessage({
+                        type: "error",
+                        message: "出错了",
+                        duration: 2000,
+                    });
+            }
+        })
+})
 function handleRegister() {
     //注册合法
     if (validUsername.value && validPassword.value && validEmail.value) {
@@ -144,15 +164,29 @@ function handleLogin() {
                     })
                     //清空内容
                     clearForm();
-                    setTimeout(() => {
-                        router.push("/main");
-                    }, 100);
-                    //成功通知
-                    ElMessage({
+                    console.log(res.data.bookId);
+                    if (res.data.bookId != null) {
+                        setTimeout(() => {
+                            router.push("/main");
+                        }, 100);
+                        ElMessage({
                         type: "success",
                         message: _username + "，好久不见！",
                         duration: 2000,
                     });
+                    }
+                    else {
+                        setTimeout(() => {
+                            router.push("/contentManager");
+                        }, 100);
+                        ElMessage({
+                        type: "success",
+                        message: _username + "，好久不见！请先选择一本单词书再开始学习",
+                        duration: 2000,
+                    });
+                    }
+                    //成功通知
+
                 } else if (res.data.status == "PasswordWrong") {
                     ElMessage({
                         type: "error",

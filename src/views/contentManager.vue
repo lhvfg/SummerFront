@@ -11,7 +11,7 @@ const books = ref([])
 const dialogFormVisible = ref(false)
 const formLabelWidth = '140px'
 const Request = axios.create({
-    baseURL:'api',
+    baseURL: 'api',
     timeout: 3000,
     withCredentials: true,
 });
@@ -36,11 +36,21 @@ onMounted(() => {
     Request.post("http://localhost:8080/chooseBook", request).then(
         (res) => {
             console.log(res);
-            books.value = res.data.bookList;
-            books.value = books.value.filter((item) => { return item.hide != 1 || item.userId == localStorage.getItem("userId") });
-            bookNames.value = books.value.map(item => item.bookName)
-            console.log(books.value);
-            console.log(bookNames.value);
+            if (res.data.status != 'block') {
+                books.value = res.data.bookList;
+                books.value = books.value.filter((item) => { return item.hide != 1 || item.userId == localStorage.getItem("userId") });
+                bookNames.value = books.value.map(item => item.bookName)
+                console.log(books.value);
+                console.log(bookNames.value);
+            }
+            else {
+                router.push('/login');
+                ElMessage({
+                        type: "error",
+                        message: "登陆过期或未登录！",
+                        duration: 2000,
+                    });
+            }
         })
 })
 function checkName() {
@@ -77,7 +87,7 @@ function chooseBook() {
     if (validName.value) {
         dialogFormVisible.value = false;
         if (localStorage.getItem("chooseBookId") == null) {
-             request = {
+            request = {
                 requestType: "chooseBookAdd",
                 bookId: books.value.find(item => item.bookName == bookName.value).id,
                 userId: localStorage.getItem("userId")
@@ -100,8 +110,8 @@ function chooseBook() {
                         message: "选择成功！",
                         duration: 2000,
                     });
-                    localStorage.setItem("chooseBookId",books.value.find(item => item.bookName == bookName.value).id)
-                   // clearAll();
+                    localStorage.setItem("chooseBookId", books.value.find(item => item.bookName == bookName.value).id)
+                    // clearAll();
                 }
                 else {
                     ElMessage({
@@ -120,11 +130,14 @@ function chooseBook() {
         });
     }
 }
-
-
-
+function back() {
+    router.push('/main')
+}
 </script>
 <template>
+    <button class="outButton" @click="back"><el-icon>
+            <ArrowLeft />
+        </el-icon></button>
     <div>
         <button @click="addWord">新增单词</button>
         <button @click="upLoadWord">上传单词</button>
@@ -135,7 +148,6 @@ function chooseBook() {
     <el-button text @click="dialogFormVisible = true">
         选择单词书
     </el-button>
-
     <el-dialog v-model="dialogFormVisible" title="选择单词书">
         <el-form :model="form">
             <el-form-item label="搜索名称" :label-width="formLabelWidth">
