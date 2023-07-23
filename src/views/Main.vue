@@ -55,9 +55,9 @@ function manageContent(){
                     <span class="red">{{ learnNum }}</span>
                 </div>
             </el-button>
-            <el-button text @click="Recite" class="glass studyButton">
+            <el-button text @click="Review" class="glass studyButton">
                 <div style="flex-direction: column;">
-                    <span class="word">Recite</span>
+                    <span style="left: -19px;" class="word">Review</span>
                     <span class="red">{{ reciteNum }}</span>
                 </div>
 
