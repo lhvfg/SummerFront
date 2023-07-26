@@ -50,7 +50,7 @@ function getCode() {
             requestType: "changePasswordRequest",
             userName: _username,
         }
-        Request.post("http://localhost:8080/changePassword", request).then(
+        Request.post("/changePassword", request).then(
             (res) => {
                 console.log(res);
                 if (res.data.status == "UserNotExist") {
@@ -95,7 +95,7 @@ function handleChangePassword() {
             password: passwordNew.value,
             code: code.value,
         };
-        Request.post("http://localhost:8080/changePassword", request).then(
+        Request.post("/changePassword", request).then(
             (res) => {
                 console.log(res);
                 if (_username == null) {

@@ -31,7 +31,7 @@ onMounted(() => {
         requestType: "getWordList",
         pageNumber: 1
     };
-    Request.post("http://localhost:8080/addBook", request).then(
+    Request.post("/addBook", request).then(
         (res) => {
             console.log(res);
             words.value = res.data.wordList;
@@ -46,7 +46,7 @@ function checkBookname() {
             requestType: "addBookRequest",
             bookName: bookName.value
         }
-        Request.post("http://localhost:8080/addBook", request).then(
+        Request.post("/addBook", request).then(
             (res) => {
                 console.log(res);
                 console.log(bookName.value);
@@ -115,7 +115,7 @@ function createBook() {
         wordId: checkedWord,
         userId: userStore.userId
     };
-    Request.post("http://localhost:8080/addBook", request).then(
+    Request.post("/addBook", request).then(
         (res) => {
             console.log(res);
             if (res.data.status == "addBookSucceed") {

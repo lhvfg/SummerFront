@@ -90,6 +90,7 @@ const sentenceChineseValid = ref(false);
 const prompt = ref(false);
 const answerValid = ref(false);
 const starValid = ref(false);
+const deleteValid = ref(false);
 
 onMounted(() => {
     startTime =parseInt(new Date().getTime() / 1000);
@@ -98,7 +99,7 @@ onMounted(() => {
         userId: userId,
         bookId: bookId,
     };
-    Request.post("http://localhost:8080/recite", request).then(
+    Request.post("/recite", request).then(
         (res) => {
             console.log(res);
             console.log(111);
@@ -182,7 +183,7 @@ function reciteOver() {
         userId: userId
     }
     console.log(seconds);
-    Request.post("http://localhost:8080/recite", request).then(
+    Request.post("/recite", request).then(
         (res) => {
             console.log(res);
             if (res.data.status == "timeNumChanged") {
@@ -207,7 +208,7 @@ function deleteStar(){
         userId: userId,
         wordId: wordId
     };
-    Request.post("http://localhost:8080/recite", request).then(
+    Request.post("/recite", request).then(
         (res) => {
             console.log(res);
             if (res.data.status == "deleteStar") {
@@ -233,13 +234,65 @@ function addStar(){
         userId: userId,
         wordId: wordId
     };
-    Request.post("http://localhost:8080/recite", request).then(
+    Request.post("/recite", request).then(
         (res) => {
             console.log(res);
             if (res.data.status == "addStar") {
                 ElMessage({
                     type: "success",
                     message: "已添加进生词本",
+                    duration: 2000,
+                });
+                starValid.value = true;
+            }
+            else {
+                ElMessage({
+                    type: "error",
+                    message: "出错了",
+                    duration: 2000,
+                });
+            }
+        })
+}
+function deleteWord(){
+    let request = {
+        requestType: "delete",
+        userId: userId,
+        wordId: wordId
+    };
+    Request.post("/recite", request).then(
+        (res) => {
+            console.log(res);
+            if (res.data.status == "deleteSuccess") {
+                ElMessage({
+                    type: "success",
+                    message: "已标熟",
+                    duration: 2000,
+                });
+                starValid.value = false;
+            }
+            else {
+                ElMessage({
+                    type: "error",
+                    message: "出错了",
+                    duration: 2000,
+                });
+            }
+        })
+}
+function undoDeleteWord(){
+    let request = {
+        requestType: "undoDelete",
+        userId: userId,
+        wordId: wordId
+    };
+    Request.post("/recite", request).then(
+        (res) => {
+            console.log(res);
+            if (res.data.status == "undoDeleteSuccess") {
+                ElMessage({
+                    type: "success",
+                    message: "取消标熟",
                     duration: 2000,
                 });
                 starValid.value = true;
@@ -266,7 +319,8 @@ function addStar(){
             <div class="functionButton">
                 <button v-show="starValid" @click="deleteStar">已收藏</button>
                 <button v-show="!starValid" @click="addStar">收藏</button>
-                <button>标熟</button>
+                <button v-show="!deleteValid" @click="deleteWord">标熟</button>
+                <button v-show="deleteValid" @click="undoDeleteWord">已标熟</button>
             </div>
         </div>
         <div class="mid">

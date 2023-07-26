@@ -57,7 +57,7 @@ function checkEmail(value) {
 }
 
 onMounted(() => {
-    Request.get("http://localhost:8080/clearSession").then(
+    Request.get("/clearSession").then(
         (res) => {
             console.log(res);
             if (res.data.status == 'clear') {
@@ -89,7 +89,7 @@ function handleRegister() {
             password: passwordNew.value,
             email: Email.value,
         };
-        Request.post("http://localhost:8080/register", request).then(
+        Request.post("/register", request).then(
             (res) => {
                 console.log(res);
                 if (res.data.status == "registerSucceed") {
@@ -137,7 +137,7 @@ function handleLogin() {
             password: password.value,
             lastLoginTime: yy + '-' + mm + '-' + dd
         };
-        Request.post("http://localhost:8080/login", request).then(
+        Request.post("/login", request).then(
             (res) => {
                 console.log(res);
                 if (res.data.status == "loginSucceed") {

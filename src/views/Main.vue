@@ -1,5 +1,5 @@
 <script setup>
-import { ref, reactive, computed } from 'vue';
+import { ref, reactive, computed,onMounted } from 'vue';
 import { useRouter } from "vue-router";
 import axios from "axios";
 import { useUserStore } from "../stores/User"
@@ -7,14 +7,15 @@ import { storeToRefs } from 'pinia';
 
 const store = useUserStore();
 const router = useRouter();
-const learnNum = 100;
-const reciteNum = 100;
+const learnNum = ref(0);
+const reviewNum = ref(0);
 const Request = axios.create({
     baseURL:'/api',
     timeout: 3000,
     withCredentials: true,
 });
-
+const bookId = ref(localStorage.getItem("chooseBookId"));
+const userId = ref(localStorage.getItem("userId"));
 
 var month = ref(new Date().getMonth() + 1);
 month.value = (month.value < 10 ? '0' : '') + month.value;
@@ -22,8 +23,59 @@ var day = ref(new Date().getDate());
 day.value = (day.value < 10 ? '0' : '') + day.value + '  ';
 const weeks = ref(["Sun.", "Mon.", "Tues.", "Wed.", "Thur.", "Fri.", "Sat."]);
 const nowDay = computed(() => weeks.value[new Date().getDay()]);
-
 const successive = ref(1);
+
+onMounted(()=>{
+    let request = {
+        requestType: "getNum",
+        bookId:bookId.value,
+        userId:userId.value
+    };
+    Request.post("/review", request).then(
+        (res) => {
+            console.log(res);
+            if (res.data.status == 'reciteNumSuccess') {
+                reviewNum.value = res.data.wordNum;
+            }
+            else if (res.data.status == 'block'){
+                router.push('/login');
+                ElMessage({
+                        type: "error",
+                        message: "登陆过期或未登录！",
+                        duration: 2000,
+                    });
+            }
+            else {
+                ElMessage({
+                        type: "error",
+                        message: "出错了",
+                        duration: 2000,
+                    });
+            }
+        })
+        Request.post("/recite", request).then(
+        (res) => {
+            console.log(res);
+            if (res.data.status == 'learnNumSuccess') {
+                learnNum.value = res.data.wordNum;
+            }
+            else if (res.data.status == 'block'){
+                router.push('/login');
+                ElMessage({
+                        type: "error",
+                        message: "登陆过期或未登录！",
+                        duration: 2000,
+                    });
+            }
+            else {
+                ElMessage({
+                        type: "error",
+                        message: "出错了",
+                        duration: 2000,
+                    });
+            }
+        })
+})
 function Learn() {
     setTimeout(() => {
         router.push('/learn');
@@ -58,7 +110,7 @@ function manageContent(){
             <el-button text @click="Review" class="glass studyButton">
                 <div style="flex-direction: column;">
                     <span style="left: -19px;" class="word">Review</span>
-                    <span class="red">{{ reciteNum }}</span>
+                    <span class="red">{{ reviewNum }}</span>
                 </div>
 
             </el-button>

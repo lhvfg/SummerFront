@@ -61,7 +61,7 @@ onMounted(() => {
     let request = {
         requestType: "bookList",
     };
-    Request.post("http://localhost:8080/addword", request).then(
+    Request.post("/addword", request).then(
         (res) => {
             console.log(res);
             books.value = res.data.bookList;
@@ -77,7 +77,7 @@ function checkSpell() {
             requestType: "addWordRequest",
             spell: spell.value
         }
-        Request.post("http://localhost:8080/addword", request).then(
+        Request.post("/addword", request).then(
             (res) => {
                 wordId = res.data.wordId;
                 if (res.data.status == "wordExisted") {
@@ -230,7 +230,7 @@ function createWord() {
         userId: userStore.userId,
         bookId: checkedBook
     };
-    Request.post("http://localhost:8080/addword", request).then(
+    Request.post("/addword", request).then(
         (res) => {
             console.log(res);
             if (res.data.status == "addWordSucceed") {

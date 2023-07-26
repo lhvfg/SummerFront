@@ -33,7 +33,7 @@ onMounted(() => {
     let request = {
         requestType: "chooseBookRequest",
     };
-    Request.post("http://localhost:8080/chooseBook", request).then(
+    Request.post("/chooseBook", request).then(
         (res) => {
             console.log(res);
             if (res.data.status != 'block') {
@@ -101,7 +101,7 @@ function chooseBook() {
                 userId: localStorage.getItem("userId")
             }
         }
-        Request.post("http://localhost:8080/chooseBook", request).then(
+        Request.post("/chooseBook", request).then(
             (res) => {
                 console.log(res);
                 if (res.data.status == "chooseSucceed") {
