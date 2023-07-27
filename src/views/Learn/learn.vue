@@ -17,7 +17,7 @@ const bookId = localStorage.getItem("chooseBookId");
 const reciteWord = ref(
     [[
         {
-            wordId:0,
+            wordId: 0,
             spell: '',
             meaning: [
                 {
@@ -45,7 +45,7 @@ const reciteWord = ref(
                     }
                 ],
             }],
-            star:false
+            star: false
         }
     ]]
 )
@@ -93,7 +93,7 @@ const starValid = ref(false);
 const deleteValid = ref(false);
 
 onMounted(() => {
-    startTime =parseInt(new Date().getTime() / 1000);
+    startTime = parseInt(new Date().getTime() / 1000);
     let request = {
         requestType: "getWords",
         userId: userId,
@@ -129,16 +129,27 @@ onMounted(() => {
         })
 })
 function handleData(reciteWord) {
-    nowCount = reciteWord.value[nowCount][nowNum].count;
-    nowSpell = reciteWord.value[nowCount][nowNum].spell;
-    wordId = reciteWord.value[nowCount][nowNum].wordId;
-    starValid.value = reciteWord.value[nowCount][nowNum].star;
-    console.log(reciteWord.value[nowCount][nowNum].derived[0].spell);
-    console.log(reciteWord.value[nowCount][nowNum].derived[0].meanings);
-    handleDerive(reciteWord.value[nowCount][nowNum].derived);
-    handleCount(nowCount);
-    handleSentence(reciteWord.value[nowCount][nowNum].sentence)
-    handleShow();
+    console.log(222);
+    console.log(reciteWord.value[nowCount].length);
+    while(reciteWord.value[nowCount].length == 0 && nowCount <3)
+    {
+        console.log("nowCount++");
+        nowCount++;
+        nowNum = 0;
+    }
+    if (reciteWord.value[nowCount].length > 0) {
+        nowCount = reciteWord.value[nowCount][nowNum].count;
+        nowSpell = reciteWord.value[nowCount][nowNum].spell;
+        wordId = reciteWord.value[nowCount][nowNum].wordId;
+        starValid.value = reciteWord.value[nowCount][nowNum].star;
+        console.log(reciteWord.value[nowCount][nowNum].derived[0].spell);
+        console.log(reciteWord.value[nowCount][nowNum].derived[0].meanings);
+        handleDerive(reciteWord.value[nowCount][nowNum].derived);
+        //处理显示绿球的数量
+        handleCount(nowCount);
+        handleSentence(reciteWord.value[nowCount][nowNum].sentence)
+        handleShow();
+    }
 }
 function handleCount(count) {
     for (var i = 0; i < count; i++) { countFlag.value[i] = true }
@@ -202,7 +213,7 @@ function reciteOver() {
             }
         })
 }
-function deleteStar(){
+function deleteStar() {
     let request = {
         requestType: "deleteStar",
         userId: userId,
@@ -228,7 +239,7 @@ function deleteStar(){
             }
         })
 }
-function addStar(){
+function addStar() {
     let request = {
         requestType: "addStar",
         userId: userId,
@@ -254,7 +265,7 @@ function addStar(){
             }
         })
 }
-function deleteWord(){
+function deleteWord() {
     let request = {
         requestType: "delete",
         userId: userId,
@@ -269,7 +280,7 @@ function deleteWord(){
                     message: "已标熟",
                     duration: 2000,
                 });
-                starValid.value = false;
+                deleteValid.value = true;
             }
             else {
                 ElMessage({
@@ -280,7 +291,7 @@ function deleteWord(){
             }
         })
 }
-function undoDeleteWord(){
+function undoDeleteWord() {
     let request = {
         requestType: "undoDelete",
         userId: userId,
@@ -295,7 +306,7 @@ function undoDeleteWord(){
                     message: "取消标熟",
                     duration: 2000,
                 });
-                starValid.value = true;
+                deleteValid.value = false;
             }
             else {
                 ElMessage({
