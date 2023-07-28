@@ -113,7 +113,7 @@ function createBook() {
         wordNum: checkedWord.length,
         bookId: bookId,
         wordId: checkedWord,
-        userId: userStore.userId
+        userId: localStorage.getItem("userId")
     };
     Request.post("/addBook", request).then(
         (res) => {

@@ -212,9 +212,7 @@ function choose(i, id) {
         console.log(checkedBook);
     }
 }
-() => {
 
-}
 //添加单词
 function createWord() {
     let request = {

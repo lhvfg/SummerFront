@@ -32,6 +32,12 @@ const router = createRouter({
                 import ("../views/addWord.vue"),
         },
         {
+            path: "/uploadWord",
+            name: "uploadWord",
+            component: () =>
+                import ("../views/uploadWord.vue"),
+        },
+        {
             path: "/addBook",
             name: "addBook",
             component: () =>

@@ -46,10 +46,10 @@ onMounted(() => {
             else {
                 router.push('/login');
                 ElMessage({
-                        type: "error",
-                        message: "登陆过期或未登录！",
-                        duration: 2000,
-                    });
+                    type: "error",
+                    message: "登陆过期或未登录！",
+                    duration: 2000,
+                });
             }
         })
 })
@@ -133,16 +133,18 @@ function chooseBook() {
 function back() {
     router.push('/main')
 }
+function upLoadWord() {
+    router.push('/uploadWord')
+}
 </script>
 <template>
     <button class="outButton" @click="back"><el-icon>
             <ArrowLeft />
         </el-icon></button>
     <div>
-        <button @click="addWord">新增单词</button>
+        <button @click="addWord">新增与修改单词</button>
         <button @click="upLoadWord">上传单词</button>
         <button @click="addBook">新增单词书</button>
-        <button @click="upLoadBook">上传单词书</button>
     </div>
     <!-- Form -->
     <el-button text @click="dialogFormVisible = true">
