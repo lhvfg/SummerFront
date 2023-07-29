@@ -3,6 +3,28 @@
     margin: 0;
 }
 
+.main {
+    background: url(../../../public/alarm.jpg);
+    background-repeat: no-repeat;
+    background-attachment: fixed;
+    background-size: cover;
+    -moz-background-size: cover;
+    -webkit-background-size: cover;
+    height: 66vw;
+    width: 100%;
+    position: fixed;
+    z-index: -2;
+}
+
+.inner {
+    position: fixed;
+    z-index: -1;
+    height: 100%;
+    width: 100%;
+    background: rgb(181 181 181 / 3%);
+    backdrop-filter: blur(51px);
+}
+
 .top {
     display: block;
     overflow: hidden;
@@ -25,6 +47,9 @@
 
 .spell_count {
     display: flex;
+    margin-left: auto;
+    margin-right: auto;
+    width: 168px;
 }
 
 .spell_count>ul {
@@ -32,17 +57,98 @@
     list-style: none;
 }
 
+.spell {
+    font-size: 34px;
+    font-weight: 790;
+}
+
 .point {
-    height: 6px;
-    width: 6px;
+    height: 4.5px;
+    width: 5.5px;
     border-radius: 3px;
-    margin: 1px;
+    top: 11px;
+    margin: 0.1px 0 3px 13px;
+    position: relative;
 }
 
 .grey {
-    background-color: gray;
+    background-color: rgb(174, 171, 171);
 }
 
 .green {
     background-color: rgb(107, 247, 200);
+}
+
+.show {
+    display: block;
+}
+
+.hide {
+    display: none;
+    height: 0;
+}
+
+.tip1 {
+    position: relative;
+    display: block;
+    font-size: 12px;
+    width: 216px;
+    margin: 7px auto 54px;
+    color: rgb(114, 113, 113);
+    left: 6px;
+}
+
+.meanChose {
+    display: flex;
+    justify-content: center;
+    flex-direction: column;
+}
+
+.option {
+    width: 324px;
+    height: 72px;
+    line-height: 43px;
+    margin-left: auto;
+    margin-top: 9px;
+    margin-right: auto;
+    list-style: none;
+    background: rgb(255 255 255 / 38%);
+    backdrop-filter: blur( 10.5px);
+    -webkit-backdrop-filter: blur( 10.5px);
+    border-radius: 9px;
+}
+
+.Function {
+    display: block;
+    font-size: 14px;
+    height: 21px;
+    color: rgb(114, 113, 113);
+}
+
+.seeAnswer {
+    width: 53px;
+    margin: 59px auto 1px;
+    display: block;
+    background-color: transparent;
+    border: none;
+    outline: none;
+}
+
+.linedown::after {
+    position: relative;
+    content: '';
+    top: 7px;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    display: block;
+    background-color: rgb(236 9 9);
+    height: 4px;
+    border-radius: 2px;
+    width: 13px;
+    color: white;
+    transition: all .2s;
+}
+
+.linedown:hover::after {
+    width: 35px;
 }

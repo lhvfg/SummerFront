@@ -131,8 +131,7 @@ onMounted(() => {
 function handleData(reciteWord) {
     console.log(222);
     console.log(reciteWord.value[nowCount].length);
-    while(reciteWord.value[nowCount].length == 0 && nowCount <3)
-    {
+    while (reciteWord.value[nowCount].length == 0 && nowCount < 3) {
         console.log("nowCount++");
         nowCount++;
         nowNum = 0;
@@ -319,7 +318,8 @@ function undoDeleteWord() {
 }
 </script>
 <template>
-    <div>
+    <div class="main">
+        <div class="inner"></div>
         <div class="top">
             <button class="outButton" @click="reciteOver"><el-icon>
                     <ArrowLeft />
@@ -337,7 +337,7 @@ function undoDeleteWord() {
         <div class="mid">
             <div class="share">
                 <div class="spell_count">
-                    <span>{{ nowSpell }}</span>
+                    <span class="spell">{{ nowSpell }}</span>
                     <ul>
                         <li class="point" :class="{ 'grey': !countFlag[2], 'green': countFlag[2] }"></li>
                         <li class="point" :class="{ 'grey': !countFlag[1], 'green': countFlag[1] }"></li>
@@ -353,20 +353,28 @@ function undoDeleteWord() {
                 </div>
             </div>
             <div class="question">
-                <span v-show="tip1Valid">先回想词义再选择，想不起来「看答案」</span>
-                <ul v-show="meanChose">
-                    <li v-for="deriveWord in deriveWords">
-                        {{ deriveWord.meaning[0].function }}{{ deriveWord.meaning[0].content }}</li>
+                <span v-show="tip1Valid" class="tip1">先回想词义再选择，想不起来「看答案」</span>
+                <ul class="meanChose" v-show="meanChose">
+                    <li class="option"  v-for="(deriveWord, index) in  deriveWords.slice(0,4) ">
+                        <div style="margin-left: 20px;">
+                            <span class="Function">
+                                {{ deriveWord.meaning[0].function }}
+                            </span>
+                            <span style="display: block;">
+                                {{ deriveWord.meaning[0].content }}
+                            </span>
+                        </div>
+                    </li>
                 </ul>
-                <ul v-show="sentenceValid">
+                <ul v-show=" sentenceValid ">
                     <li>{{ sentences[0].content }}</li>
-                    <li v-show="sentenceChineseValid">{{ sentences[0].contentMean }}</li>
+                    <li v-show=" sentenceChineseValid ">{{ sentences[0].contentMean }}</li>
                 </ul>
-                <button v-show="prompt">提示一下</button>
-                <span v-show="tip2Valid">tip2</span>
+                <button v-show=" prompt ">提示一下</button>
+                <span v-show=" tip2Valid ">tip2</span>
             </div>
 
-            <div v-show="answerValid" class="answer">
+            <div v-show=" answerValid " class="answer">
                 <div>
                     <ul>
                         <li>
@@ -399,19 +407,19 @@ function undoDeleteWord() {
                 </div>
             </div>
         </div>
-        <div class="buttom">
-            <div v-show="question">
-                <button v-show="nowCount == 0">
-                    <span>看答案</span>
+        <div class="buttonBox">
+            <div v-show=" question ">
+                <button class="seeAnswer" v-show=" nowCount == 0 ">
+                    <span class="linedown"  style="font-size: 17px;">看答案</span>
                 </button>
-                <button v-show="nowCount != 0">
+                <button v-show=" nowCount != 0 ">
                     <span>认识</span>
                 </button>
-                <button v-show="nowCount != 0">
+                <button v-show=" nowCount != 0 ">
                     <span>不认识</span>
                 </button>
             </div>
-            <div v-show="!question">
+            <div v-show=" !question ">
                 <button>
                     <span>下一词</span>
                 </button>
