@@ -3,7 +3,7 @@ import { ref, reactive, onMounted } from 'vue'
 import { useRouter } from "vue-router";
 import axios from "axios";
 import { ElMessage } from "element-plus";
-import { storeToRefs } from 'pinia';
+import { useUserStore } from "../../stores/User"
 
 const router = useRouter();
 const Request = axios.create({
@@ -11,6 +11,7 @@ const Request = axios.create({
     timeout: 3000,
     withCredentials: true,
 });
+const store = useUserStore();
 
 const userId = localStorage.getItem("userId");
 const bookId = localStorage.getItem("chooseBookId");
@@ -21,7 +22,7 @@ const reciteWord = ref(
             spell: '',
             meaning: [
                 {
-                    meaningContent: '',
+                    content: '',
                     function: ''
                 }
             ],
@@ -49,17 +50,8 @@ const reciteWord = ref(
         }
     ]]
 )
-const deriveWords = ref([{
-    spell: '',
-    meaning: [
-        {
-            content: '',
-            function: '',
-            id: 0,
-            wordId: 0
-        }
-    ],
-}])
+const deriveWords = ref([])
+const deriveOption = ref([])
 const sentences = ref([{
     content: '',
     contentMean: ''
@@ -76,6 +68,15 @@ let nowSpell = '';
 let nowCount = 0;
 //当前背完了几个单词
 let recitedWordNum = ref(0);
+//当前背的单词的释义
+let nowMeaning = [
+    {
+        content: '',
+        function: '',
+        id: 0,
+        wordId: 0
+    }
+]
 let date = new Date();
 let startTime;
 let wordId;
@@ -107,9 +108,9 @@ onMounted(() => {
                 reciteWord.value[0] = res.data.reciteNewWordDates;
                 reciteWord.value[1] = res.data.reciteOneWordDates;
                 reciteWord.value[2] = res.data.reciteTwoWordDates;
-                console.log(reciteWord.value[0]);
-                console.log(reciteWord.value[1]);
-                console.log(reciteWord.value[2]);
+                //console.log(reciteWord.value[0]);
+                //console.log(reciteWord.value[1]);
+                //console.log(reciteWord.value[2]);
                 for (var i = 0; i < 3; i++) {
                     len[i] = reciteWord.value[i].length;
                 }
@@ -128,6 +129,7 @@ onMounted(() => {
             }
         })
 })
+//数据处理
 function handleData(reciteWord) {
     console.log(222);
     console.log(reciteWord.value[nowCount].length);
@@ -141,12 +143,13 @@ function handleData(reciteWord) {
         nowSpell = reciteWord.value[nowCount][nowNum].spell;
         wordId = reciteWord.value[nowCount][nowNum].wordId;
         starValid.value = reciteWord.value[nowCount][nowNum].star;
-        console.log(reciteWord.value[nowCount][nowNum].derived[0].spell);
-        console.log(reciteWord.value[nowCount][nowNum].derived[0].meanings);
+        nowMeaning = reciteWord.value[nowCount][nowNum].meaning;
+        //console.log(reciteWord.value[nowCount][nowNum].derived[0].spell);
+        //console.log(reciteWord.value[nowCount][nowNum].derived[0].meanings);
         handleDerive(reciteWord.value[nowCount][nowNum].derived);
         //处理显示绿球的数量
         handleCount(nowCount);
-        handleSentence(reciteWord.value[nowCount][nowNum].sentence)
+        handleSentence(reciteWord.value[nowCount][nowNum].sentence);
         handleShow();
     }
 }
@@ -167,14 +170,28 @@ function handleShow() {
     }
 }
 function handleDerive(derives) {
-    deriveWords.value = derives.map(
-        (derive) => ({
-            spell: derive.spell,
-            meaning: derive.meanings
-        })
-    )
-    console.log(deriveWords.value);
-}
+    //衍生词
+    //console.log(derives);
+    for (var index = 0; index < derives.length; index++) {
+        //console.log("第"+index+"次循环"+derives[index].spell);
+        deriveWords.value.push({ spell: derives[index].spell, meaning: derives[index].meanings });
+    }
+    //console.log(deriveWords.value);
+
+    //释义选项
+    var pos = new Array();
+    var ans = Math.floor(Math.random() * 4);
+    pos.push(ans);
+    deriveOption.value[ans] = nowMeaning[0];
+    var c = 0,j=0;
+    while (j < 3) {
+            if (c == ans) {
+                c++;
+            };
+            deriveOption.value[c] = deriveWords.value[j].meaning[0];
+            c++;j++
+        }
+    }
 function handleSentence(s) {
     sentences.value = s.map(
         (sentence) => ({
@@ -183,6 +200,7 @@ function handleSentence(s) {
         })
     )
 }
+//退出界面
 function reciteOver() {
     router.push('/main');
     let seconds = Math.floor(parseInt(new Date().getTime() / 1000) - startTime);
@@ -212,6 +230,7 @@ function reciteOver() {
             }
         })
 }
+//收藏与标熟
 function deleteStar() {
     let request = {
         requestType: "deleteStar",
@@ -355,26 +374,26 @@ function undoDeleteWord() {
             <div class="question">
                 <span v-show="tip1Valid" class="tip1">先回想词义再选择，想不起来「看答案」</span>
                 <ul class="meanChose" v-show="meanChose">
-                    <li class="option"  v-for="(deriveWord, index) in  deriveWords.slice(0,4) ">
+                    <li class="option" v-for="(deriveWord, index) in  deriveOption ">
                         <div style="margin-left: 20px;">
                             <span class="Function">
-                                {{ deriveWord.meaning[0].function }}
+                                {{ deriveWord.function }}
                             </span>
                             <span style="display: block;">
-                                {{ deriveWord.meaning[0].content }}
+                                {{ deriveWord.content }}
                             </span>
                         </div>
                     </li>
                 </ul>
-                <ul v-show=" sentenceValid ">
+                <ul v-show="sentenceValid">
                     <li>{{ sentences[0].content }}</li>
-                    <li v-show=" sentenceChineseValid ">{{ sentences[0].contentMean }}</li>
+                    <li v-show="sentenceChineseValid">{{ sentences[0].contentMean }}</li>
                 </ul>
-                <button v-show=" prompt ">提示一下</button>
-                <span v-show=" tip2Valid ">tip2</span>
+                <button v-show="prompt">提示一下</button>
+                <span v-show="tip2Valid">tip2</span>
             </div>
 
-            <div v-show=" answerValid " class="answer">
+            <div v-show="answerValid" class="answer">
                 <div>
                     <ul>
                         <li>
@@ -408,18 +427,18 @@ function undoDeleteWord() {
             </div>
         </div>
         <div class="buttonBox">
-            <div v-show=" question ">
-                <button class="seeAnswer" v-show=" nowCount == 0 ">
-                    <span class="linedown"  style="font-size: 17px;">看答案</span>
+            <div v-show="question">
+                <button class="seeAnswer" v-show="nowCount == 0">
+                    <span class="linedown" style="font-size: 17px;">看答案</span>
                 </button>
-                <button v-show=" nowCount != 0 ">
+                <button v-show="nowCount != 0">
                     <span>认识</span>
                 </button>
-                <button v-show=" nowCount != 0 ">
+                <button v-show="nowCount != 0">
                     <span>不认识</span>
                 </button>
             </div>
-            <div v-show=" !question ">
+            <div v-show="!question">
                 <button>
                     <span>下一词</span>
                 </button>
