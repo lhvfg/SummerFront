@@ -79,6 +79,30 @@
     background-color: rgb(107, 247, 200);
 }
 
+.fontGrey {
+    color: rgb(114, 113, 113);
+}
+
+.optionGreen {
+    background-color: rgb(64 215 96 / 41%);
+    transition: all 0.6s;
+}
+
+.optionRed {
+    background-color: rgb(255 144 141 / 40%);
+    transition: all 0.6s;
+}
+
+.optionGrey {
+    background: rgb(255 255 255 / 38%);
+    transition: all 0.6s;
+}
+
+.optionHighGrey {
+    background: rgba(255, 255, 255, 0.612);
+    transition: all 0.6s;
+}
+
 .show {
     display: block;
 }
@@ -107,41 +131,57 @@
 .option {
     width: 324px;
     height: 72px;
-    line-height: 43px;
     margin-left: auto;
     margin-top: 9px;
     margin-right: auto;
     list-style: none;
-    background: rgb(255 255 255 / 38%);
     backdrop-filter: blur( 10.5px);
     -webkit-backdrop-filter: blur( 10.5px);
     border-radius: 9px;
+    cursor: pointer;
 }
+
+
+/* .option:hover {
+    background: rgba(255, 255, 255, 0.612);
+} */
 
 .Function {
     display: block;
-    font-size: 14px;
+    font-size: 13px;
+    line-height: 21px;
     height: 21px;
     color: rgb(114, 113, 113);
 }
 
 .seeAnswer {
-    width: 53px;
+    width: 80px;
     margin: 59px auto 1px;
     display: block;
     background-color: transparent;
     border: none;
     outline: none;
+    cursor: pointer;
+    height: 33px;
 }
 
-.linedown::after {
+.linedown1,
+.linedown2 {
+    display: inline-block;
+    font-size: 17px;
+    width: 100%;
+    line-height: 131%;
+    height: 100%;
+}
+
+.linedown1::after,
+.linedown2::after {
     position: relative;
     content: '';
-    top: 7px;
+    top: 3px;
     left: 50%;
     transform: translate(-50%, -50%);
     display: block;
-    background-color: rgb(236 9 9);
     height: 4px;
     border-radius: 2px;
     width: 13px;
@@ -149,6 +189,15 @@
     transition: all .2s;
 }
 
-.linedown:hover::after {
-    width: 35px;
+.linedown1::after {
+    background-color: rgb(236 9 9);
+}
+
+.linedown2::after {
+    background-color: rgb(15 164 57);
+}
+
+.linedown1:hover::after,
+.linedown2:hover::after {
+    width: 30px;
 }

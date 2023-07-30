@@ -77,21 +77,32 @@ let nowMeaning = [
         wordId: 0
     }
 ]
+//现在选择的正确选项
+let ans;
+//用于选项样式变化
+const optionValid = ref([false]);
 let date = new Date();
 let startTime;
 let wordId;
 
+//问题界面显示的判定
 const question = ref(true);
 const tip1Valid = ref(false);
 const tip2Valid = ref(false);
+//单词释义显示的判定
 const meaningValid = ref(false);
+//释义选项显示的判定
 const meanChose = ref(false);
 const sentenceValid = ref(false);
 const sentenceChineseValid = ref(false);
 const prompt = ref(false);
+//答案界面的判定
 const answerValid = ref(false);
+//收藏与标熟的判定
 const starValid = ref(false);
 const deleteValid = ref(false);
+//显示选项答案的判定
+const ansValid = ref(false)
 
 onMounted(() => {
     startTime = parseInt(new Date().getTime() / 1000);
@@ -157,7 +168,7 @@ function handleCount(count) {
     for (var i = 0; i < count; i++) { countFlag.value[i] = true }
 }
 function handleShow() {
-    if (question) {
+    if (question.value) {
         if (nowCount == 0) {
             tip1Valid.value = true;
             tip2Valid.value = false;
@@ -180,18 +191,18 @@ function handleDerive(derives) {
 
     //释义选项
     var pos = new Array();
-    var ans = Math.floor(Math.random() * 4);
+    ans = Math.floor(Math.random() * 4);
     pos.push(ans);
-    deriveOption.value[ans] = nowMeaning[0];
-    var c = 0,j=0;
+    deriveOption.value[ans] = { spell: nowSpell, meaning: nowMeaning[0] };
+    var c = 0, j = 0;
     while (j < 3) {
-            if (c == ans) {
-                c++;
-            };
-            deriveOption.value[c] = deriveWords.value[j].meaning[0];
-            c++;j++
-        }
+        if (c == ans) {
+            c++;
+        };
+        deriveOption.value[c] = { spell: deriveWords.value[j].spell, meaning: deriveWords.value[j].meaning[0] };
+        c++; j++
     }
+}
 function handleSentence(s) {
     sentences.value = s.map(
         (sentence) => ({
@@ -199,6 +210,19 @@ function handleSentence(s) {
             contentMean: sentence.contentMean
         })
     )
+}
+//释义选中
+function handleChick(index) {
+    ansValid.value = true;
+    if (index != ans) {
+        optionValid.value[index] = true;
+    }
+    else {
+        setTimeout(() => {
+            question.value = false;
+            answerValid.value = true;
+        }, 500)
+    }
 }
 //退出界面
 function reciteOver() {
@@ -374,13 +398,30 @@ function undoDeleteWord() {
             <div class="question">
                 <span v-show="tip1Valid" class="tip1">先回想词义再选择，想不起来「看答案」</span>
                 <ul class="meanChose" v-show="meanChose">
-                    <li class="option" v-for="(deriveWord, index) in  deriveOption ">
-                        <div style="margin-left: 20px;">
-                            <span class="Function">
-                                {{ deriveWord.function }}
+                    <li class="option"
+                        :class="{ 'optionGrey': (ansValid && !optionValid[index] && index != ans) || !ansValid, 'optionGreen': ansValid && index == ans, 'optionRed': optionValid[index] }"
+                        v-for="(deriveWord, index) in  deriveOption " @click="handleChick(index)">
+                        <div style="margin: 14px 0px auto 21px;">
+                            <span v-show="!ansValid || ansValid && (!optionValid[index] && index != ans)" class="Function">
+                                {{ deriveWord.meaning.function }}
                             </span>
-                            <span style="display: block;">
-                                {{ deriveWord.content }}
+                            <span v-show="!ansValid || ansValid && (!optionValid[index] && index != ans)" style="display: block;"
+                                :class="{ 'fontGrey': ansValid && !optionValid[index] && index != ans }">
+                                {{ deriveWord.meaning.content }}
+                            </span>
+                            <span v-show="optionValid[index] || (ansValid && index == ans)" style="    font-size: 17px;margin-top: 4px;display: inline-block;">
+                                {{ deriveWord.spell }}
+                            </span>
+                            <span v-show="(ansValid && index == ans)" style="color: rgb(1 128 1);">
+                                <el-icon >
+                                    <Check style="scale: 1.2;
+    margin-left: 17px;
+    /* margin-bottom: -8px; */
+    overflow: visible;" />
+                                </el-icon>
+                            </span>
+                            <span v-show="optionValid[index] || (ansValid && index == ans)" class="Function">
+                                {{ deriveWord.meaning.function }}{{ deriveWord.meaning.content }}
                             </span>
                         </div>
                     </li>
@@ -429,7 +470,8 @@ function undoDeleteWord() {
         <div class="buttonBox">
             <div v-show="question">
                 <button class="seeAnswer" v-show="nowCount == 0">
-                    <span class="linedown" style="font-size: 17px;">看答案</span>
+                    <span v-show="!ansValid" class="linedown1" style="font-size: 17px;">看答案</span>
+                    <span v-show="ansValid" class="linedown2" style="font-size: 17px;">继续</span>
                 </button>
                 <button v-show="nowCount != 0">
                     <span>认识</span>
@@ -451,6 +493,4 @@ function undoDeleteWord() {
 
     </div>
 </template>
-<style scoped>
-@import './learn.css';
-</style>
+<style scoped>@import './learn.css';</style>
