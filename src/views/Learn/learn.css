@@ -73,10 +73,12 @@
 
 .grey {
     background-color: rgb(174, 171, 171);
+    transition: all 0.6s;
 }
 
 .green {
     background-color: rgb(107, 247, 200);
+    transition: all 0.6s;
 }
 
 .fontGrey {

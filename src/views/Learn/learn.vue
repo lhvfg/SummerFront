@@ -60,6 +60,8 @@ const sentences = ref([{
 let countFlag = ref([false]);
 let maxNum = ref(10);
 let len = ref([]);
+//现在在背的单词的id
+let wordId;
 //当前在背的是该count中的几个，从零开始
 let nowNum = 0;
 //现在在背的单词的拼写
@@ -83,7 +85,6 @@ let ans;
 const optionValid = ref([false]);
 let date = new Date();
 let startTime;
-let wordId;
 
 //问题界面显示的判定
 const question = ref(true);
@@ -216,13 +217,52 @@ function handleChick(index) {
     ansValid.value = true;
     if (index != ans) {
         optionValid.value[index] = true;
+        handleWrong();
     }
     else {
+        if (nowCount < 2)
+            handleRight(1);
+        else
+            handleRight(2)
         setTimeout(() => {
             question.value = false;
             answerValid.value = true;
-        }, 500)
+        }, 1500)
     }
+}
+//答对了 向后端发送请求，更改小球颜色
+function handleRight(i) {
+    let request;
+    if (i == 1) {
+        request = {
+            requestType: "right",
+            userId: userId,
+            wordId: wordId
+        }
+    }
+    else if (i == 2) {
+        request = {
+            requestType: "wordRecite",
+            userId: userId,
+            wordId: wordId
+        }
+    }
+    Request.post("/recite", request).then(
+        (res) => {
+            console.log(res);
+            if (res.data.status == "countAdd" || "wordRecite") {
+                //处理显示绿球的数量
+                nowCount++;
+                handleCount(nowCount);
+            }
+            else {
+                ElMessage({
+                    type: "error",
+                    message: "出错了",
+                    duration: 2000,
+                });
+            }
+        })
 }
 //退出界面
 function reciteOver() {
@@ -405,19 +445,18 @@ function undoDeleteWord() {
                             <span v-show="!ansValid || ansValid && (!optionValid[index] && index != ans)" class="Function">
                                 {{ deriveWord.meaning.function }}
                             </span>
-                            <span v-show="!ansValid || ansValid && (!optionValid[index] && index != ans)" style="display: block;"
+                            <span v-show="!ansValid || ansValid && (!optionValid[index] && index != ans)"
+                                style="display: block;"
                                 :class="{ 'fontGrey': ansValid && !optionValid[index] && index != ans }">
                                 {{ deriveWord.meaning.content }}
                             </span>
-                            <span v-show="optionValid[index] || (ansValid && index == ans)" style="    font-size: 17px;margin-top: 4px;display: inline-block;">
+                            <span v-show="optionValid[index] || (ansValid && index == ans)"
+                                style="    font-size: 17px;margin-top: 4px;display: inline-block;">
                                 {{ deriveWord.spell }}
                             </span>
                             <span v-show="(ansValid && index == ans)" style="color: rgb(1 128 1);">
-                                <el-icon >
-                                    <Check style="scale: 1.2;
-    margin-left: 17px;
-    /* margin-bottom: -8px; */
-    overflow: visible;" />
+                                <el-icon>
+                                    <Check style="scale: 1.2;margin-left: 17px;overflow: visible;" />
                                 </el-icon>
                             </span>
                             <span v-show="optionValid[index] || (ansValid && index == ans)" class="Function">
@@ -470,8 +509,8 @@ function undoDeleteWord() {
         <div class="buttonBox">
             <div v-show="question">
                 <button class="seeAnswer" v-show="nowCount == 0">
-                    <span v-show="!ansValid" class="linedown1" style="font-size: 17px;">看答案</span>
-                    <span v-show="ansValid" class="linedown2" style="font-size: 17px;">继续</span>
+                    <span v-show="!ansValid" class="linedown1" style="font-size: 17px;" @click="ansValid = true">看答案</span>
+                    <span v-show="ansValid" class="linedown2" style="font-size: 17px;" @click="handleChange()">继续</span>
                 </button>
                 <button v-show="nowCount != 0">
                     <span>认识</span>
@@ -493,4 +532,6 @@ function undoDeleteWord() {
 
     </div>
 </template>
-<style scoped>@import './learn.css';</style>
+<style scoped>
+@import './learn.css';
+</style>
