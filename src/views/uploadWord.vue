@@ -89,9 +89,21 @@ const submitUpload = (): void => {
                     dis.value[i] = false;
                 }
             }
+            else{
+                ElMessage({
+                        type: "error",
+                        message: "出错了",
+                        duration: 2000,
+                    });
+            }
         })
         .catch(error => {
             console.error(error);
+            ElMessage({
+                        type: "error",
+                        message: "出错了",
+                        duration: 2000,
+                    });
         });
 }
 

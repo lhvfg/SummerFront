@@ -52,9 +52,7 @@ const reciteWord = ref(
     ]]
 )
 //实际选出的背诵单词
-const zeroWord = ref([]);
-const oneWord = ref([]);
-const twoWord = ref([]);
+const wordData = ref([[]]);
 //背诵总数
 let maxNum = ref(10);
 //count0/1/2各数组长度
@@ -63,10 +61,15 @@ let len = ref([]);
 const deriveWords = ref([])
 //当前单词的派生词选项
 const deriveOption = ref([])
+//当前单词的例句
 const sentences = ref([{
     content: '',
     contentMean: ''
 }])
+//当前单词的近义词
+const synonymous = ref([])
+//当前单词的笔记
+const notes = ref([])
 //当前在背第几轮
 let trun = 0;
 //现在在背的单词的id
@@ -120,8 +123,7 @@ const deleteValid = ref(false);
 const ansValid = ref(false)
 //当前背对了没有
 let flag = null;
-//详细内容框显示的判定
-const detailValid = ref(false);
+
 
 onMounted(() => {
     startTime = parseInt(new Date().getTime() / 1000);
@@ -136,15 +138,15 @@ onMounted(() => {
             console.log(111);
             if (res.data.status == "reciteWords") {
                 //count = 0
-                zeroWord.value = reciteWord.value[0] = res.data.reciteNewWordDates;
+                wordData.value[0] = reciteWord.value[0] = res.data.reciteNewWordDates;
                 //count = 1
                 reciteWord.value[1] = res.data.reciteOneWordDates;
                 if (reciteWord.value[1].length > 0)
-                    oneWord.value = reciteWord.value[1].splice(0, reciteWord.value[1].length > 3 ? 2 : reciteWord.value[1].length - 1);
+                    wordData.value[1] = reciteWord.value[1].splice(0, reciteWord.value[1].length > 3 ? 2 : reciteWord.value[1].length - 1);
                 //count = 2
                 reciteWord.value[2] = res.data.reciteTwoWordDates;
                 if (reciteWord.value[2].length > 0)
-                    twoWord.value = reciteWord.value[2].splice(0, reciteWord.value[2].length > 4 ? 3 : reciteWord.value[2].length - 1);
+                    wordData.value[2] = reciteWord.value[2].splice(0, reciteWord.value[2].length > 4 ? 3 : reciteWord.value[2].length - 1);
                 //console.log(reciteWord.value[0]);
                 //console.log(reciteWord.value[1]);
                 //console.log(reciteWord.value[2]);
@@ -170,24 +172,26 @@ onMounted(() => {
 function handleData() {
     console.log(222);
     //寻找数据
-    while (reciteWord.value[nowCount].length == 0 && nowCount < 3) {
+    while (wordData.value[nowCount].length == 0 && nowCount < 3) {
         console.log("nowCount++");
         nowCount++;
         nowNum = 0;
     }
     //找到数据
-    if (reciteWord.value[nowCount].length > 0) {
-        nowCount = reciteWord.value[nowCount][nowNum].count;
-        nowSpell = reciteWord.value[nowCount][nowNum].spell;
-        wordId = reciteWord.value[nowCount][nowNum].wordId;
-        starValid.value = reciteWord.value[nowCount][nowNum].star;
-        nowMeaning = reciteWord.value[nowCount][nowNum].meaning;
+    if (wordData.value[nowCount].length > 0) {
+        nowCount = wordData.value[nowCount][nowNum].count;
+        nowSpell = wordData.value[nowCount][nowNum].spell;
+        wordId = wordData.value[nowCount][nowNum].wordId;
+        starValid.value = wordData.value[nowCount][nowNum].star;
+        nowMeaning = wordData.value[nowCount][nowNum].meaning;
         //console.log(reciteWord.value[nowCount][nowNum].derived[0].spell);
         //console.log(reciteWord.value[nowCount][nowNum].derived[0].meanings);
-        handleDerive(reciteWord.value[nowCount][nowNum].derived);
+        handleDerive(wordData.value[nowCount][nowNum].derived);
         //处理显示绿球的数量
         handlePoint(nowCount);
-        handleSentence(reciteWord.value[nowCount][nowNum].sentence);
+        handleSentence(wordData.value[nowCount][nowNum].sentence);
+        synonymous.value = wordData.value[nowCount][nowNum].Synonymous;
+        notes.value = wordData.value[nowCount][nowNum].notes
         handleShow();
     }
 }
@@ -235,6 +239,7 @@ function handleShow() {
         meaningValid.value = true;
         meanChose.value = false;
         sentenceValid.value = true;
+        sentenceChineseValid.value = true;
         prompt.value = false;
     }
 
@@ -260,6 +265,7 @@ function handleDerive(derives) {
             if (c == ans) {
                 c++;
             };
+            console.log(deriveWords.value[j].spell);
             deriveOption.value[c] = { spell: deriveWords.value[j].spell, meaning: deriveWords.value[j].meaning[0] };
             c++; j++
         }
@@ -336,12 +342,6 @@ function handleRight(i) {
             if (res.data.status == "wordRecite") {
                 //背诵数据加一
                 recitedWordNum.value++;
-                //短暂停留后变更显示
-                setTimeout(() => {
-                    question.value = false;
-                    answerValid.value = true;
-                    handleShow();
-                }, 1500)
                 //处理显示绿球的数量
                 handlePoint(nowCount + 1);
             }
@@ -356,7 +356,14 @@ function handleRight(i) {
                     duration: 2000,
                 });
             }
+            //短暂停留后变更显示
+            setTimeout(() => {
+                question.value = false;
+                answerValid.value = true;
+                handleShow();
+            }, 1500)
         })
+        
 }
 //答题后处理数组
 function handleArray(flag, nowCount) {
@@ -369,19 +376,19 @@ function handleArray(flag, nowCount) {
             case 0:
                 {
                     //取出首个，加到另一个数组末尾
-                    const temp = zeroWord.value.shift();
-                    oneWord.value.push(temp);
+                    const temp = wordData.value[0].shift();
+                    wordData.value[1].push(temp);
                     break;
                 }
             case 1: {
                 //取出首个，加到另一个数组末尾
-                const temp = oneWord.value.shift();
-                twoWord.value.push(temp);
+                const temp = wordData.value[1].shift();
+                wordData.value[2].push(temp);
                 break;
             }
             case 2: {
                 //取出首个
-                twoWord.value.shift();
+                wordData.value[2].shift();
                 break;
             }
 
@@ -391,18 +398,18 @@ function handleArray(flag, nowCount) {
     else {
         switch (nowCount) {
             case 0: {
-                const temp = zeroWord.value.shift();
-                zeroWord.value.push(temp);
+                const temp = wordData.value[0].shift();
+                wordData.value[0].push(temp);
                 break;
             }
             case 1: {
-                const temp = oneWord.value.shift();
-                oneWord.value.push(temp);
+                const temp = wordData.value[1].shift();
+                wordData.value[1].push(temp);
                 break;
             }
             case 2: {
-                const temp = twoWord.value.shift();
-                twoWord.value.push(temp);
+                const temp = wordData.value[2].shift();
+                wordData.value[2].push(temp);
                 break;
             }
 
@@ -411,7 +418,7 @@ function handleArray(flag, nowCount) {
 }
 //答题后判断下一个背什么单词
 function handleNextWord() {
-    
+
 }
 //退出界面
 function reciteOver() {
@@ -578,8 +585,8 @@ function undoDeleteWord() {
                 </div>
                 <div v-show="meaningValid">
                     <ul>
-                        <li>
-                            <span>词性</span><span>释义</span>
+                        <li v-for="mean in nowMeaning">
+                            <span>{{ mean.function }}</span><span>{{ mean.content }}</span>
                         </li>
                     </ul>
                 </div>
@@ -624,14 +631,23 @@ function undoDeleteWord() {
             <div v-show="answerValid" class="answer">
                 <div>
                     <ul>
-                        <li>
-                            派生内容
+                        <li v-for="derive in deriveWords">
+                            <span>{{ derive.spell }}</span>
+                            <span>{{ derive.meaning[0].function }}</span>
+                            <span>{{ derive.meaning[0].content }}</span>
                         </li>
-                        <li>
-                            近义内容
+                        <li v-for="s in synonymous">
+                            <span>{{ s.Function }}</span>
+                            <span>{{ s.mening }}</span>
+                            <ul>
+                                <li v-for="(spell, index) in s.spells">
+                                    <span>{{ spell }}</span>
+                                    <span v-if="index != s.spells.length">/</span>
+                                </li>
+                            </ul>
                         </li>
-                        <li>
-                            笔记内容
+                        <li v-for="n in notes">
+                            <span>{{ n.content }}</span>
                         </li>
                     </ul>
                     <ul>
@@ -645,7 +661,7 @@ function undoDeleteWord() {
                                 近义按钮
                             </button>
                         </li>
-                        <li>
+                        <li v-if="notes.length > 0">
                             <button>
                                 笔记按钮
                             </button>
@@ -658,7 +674,7 @@ function undoDeleteWord() {
             <div v-show="question">
                 <button class="seeAnswer" v-show="nowCount == 0">
                     <span v-show="!ansValid" class="linedown1" style="font-size: 17px;" @click="ansValid = true">看答案</span>
-                    <span v-show="ansValid" class="linedown2" style="font-size: 17px;" @click="handleChange()">继续</span>
+                    <span v-show="ansValid" class="linedown2" style="font-size: 17px;" @click="handleShow()">继续</span>
                 </button>
                 <button v-show="nowCount != 0">
                     <span>认识</span>
