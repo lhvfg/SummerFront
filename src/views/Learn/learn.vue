@@ -190,7 +190,7 @@ function handleData() {
         //处理显示绿球的数量
         handlePoint(nowCount);
         handleSentence(wordData.value[nowCount][nowNum].sentence);
-        synonymous.value = wordData.value[nowCount][nowNum].Synonymous;
+        synonymous.value = wordData.value[nowCount][nowNum].synonymous;
         notes.value = wordData.value[nowCount][nowNum].notes
         handleShow();
     }
@@ -252,7 +252,7 @@ function handleDerive(derives) {
         //console.log("第"+index+"次循环"+derives[index].spell);
         deriveWords.value.push({ spell: derives[index].spell, meaning: derives[index].meanings });
     }
-    //console.log(deriveWords.value);
+    console.log(deriveWords.value);
 
     //释义选项
     if (nowCount == 0) {
@@ -282,13 +282,20 @@ function handleSentence(s) {
 }
 //处理作答
 function handleChick(index) {
-    ansValid.value = true;
-    if (index != ans) {
-        optionValid.value[index] = true;
-        handleWrong();
+    if (ansValid.value == false) {
+        ansValid.value = true;
+        if (index != ans) {
+            optionValid.value[index] = true;
+            handleWrong();
+        }
+        else {
+            handleRight(nowCount);
+        }
     }
     else {
-        handleRight(nowCount);
+        if (index != ans) {
+            optionValid.value[index] = true;
+        }
     }
 }
 //答错了总处理
@@ -358,12 +365,16 @@ function handleRight(i) {
             }
             //短暂停留后变更显示
             setTimeout(() => {
-                question.value = false;
-                answerValid.value = true;
-                handleShow();
+                toAnswer()
             }, 1500)
         })
-        
+
+}
+//答题后跳至答案界面
+function toAnswer() {
+    question.value = false;
+    answerValid.value = true;
+    handleShow();
 }
 //答题后处理数组
 function handleArray(flag, nowCount) {
@@ -630,12 +641,14 @@ function undoDeleteWord() {
             </div>
             <div v-show="answerValid" class="answer">
                 <div>
-                    <ul>
+                    <ul id="derive">
                         <li v-for="derive in deriveWords">
                             <span>{{ derive.spell }}</span>
                             <span>{{ derive.meaning[0].function }}</span>
                             <span>{{ derive.meaning[0].content }}</span>
                         </li>
+                    </ul>
+                    <ul id="synonymous">
                         <li v-for="s in synonymous">
                             <span>{{ s.Function }}</span>
                             <span>{{ s.mening }}</span>
@@ -646,6 +659,8 @@ function undoDeleteWord() {
                                 </li>
                             </ul>
                         </li>
+                    </ul>
+                    <ul id="notes">
                         <li v-for="n in notes">
                             <span>{{ n.content }}</span>
                         </li>
@@ -674,7 +689,7 @@ function undoDeleteWord() {
             <div v-show="question">
                 <button class="seeAnswer" v-show="nowCount == 0">
                     <span v-show="!ansValid" class="linedown1" style="font-size: 17px;" @click="ansValid = true">看答案</span>
-                    <span v-show="ansValid" class="linedown2" style="font-size: 17px;" @click="handleShow()">继续</span>
+                    <span v-show="ansValid" class="linedown2" style="font-size: 17px;" @click="toAnswer()">继续</span>
                 </button>
                 <button v-show="nowCount != 0">
                     <span>认识</span>
