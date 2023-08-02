@@ -286,9 +286,11 @@ function handleChick(index) {
         ansValid.value = true;
         if (index != ans) {
             optionValid.value[index] = true;
+            flag = false;
             handleWrong();
         }
         else {
+            flag = true;
             handleRight(nowCount);
         }
     }
@@ -566,6 +568,8 @@ function undoDeleteWord() {
             }
         })
 }
+
+console.log(sentences.value.length);
 </script>
 <template>
     <div class="main">
@@ -594,16 +598,20 @@ function undoDeleteWord() {
                         <li class="point" :class="{ 'grey': !countFlag[0], 'green': countFlag[0] }"></li>
                     </ul>
                 </div>
-                <div v-show="meaningValid">
+                <div v-show="meaningValid" class="mean">
                     <ul>
                         <li v-for="mean in nowMeaning">
-                            <span>{{ mean.function }}</span><span>{{ mean.content }}</span>
+                            <span class="meanFunction">{{ mean.function}}</span><span class="meanWord">{{ mean.content }}</span>
                         </li>
                     </ul>
                 </div>
-                <ul v-show="sentenceValid">
-                    <li>{{ sentences[0].content }}</li>
-                    <li v-show="sentenceChineseValid">{{ sentences[0].contentMean }}</li>
+                <ul v-show="sentenceValid" class="optionGrey sentenceBox">
+                    <div>
+                        <li>{{ sentences[0].content }}</li>
+                        <li v-show="sentenceChineseValid" style="margin-top: 3px;font-size: 14px;">{{
+                            sentences[0].contentMean }}</li>
+                    </div>
+
                 </ul>
             </div>
             <div class="question">
@@ -626,7 +634,7 @@ function undoDeleteWord() {
                                 {{ deriveWord.spell }}
                             </span>
                             <span v-show="(ansValid && index == ans)" style="color: rgb(1 128 1);">
-                                <el-icon>
+                                <el-icon style="width: 39px;left: -13px;">
                                     <Check style="scale: 1.2;margin-left: 17px;overflow: visible;" />
                                 </el-icon>
                             </span>
@@ -640,48 +648,55 @@ function undoDeleteWord() {
                 <span v-show="tip2Valid">tip2</span>
             </div>
             <div v-show="answerValid" class="answer">
-                <div>
-                    <ul id="derive">
-                        <li v-for="derive in deriveWords">
-                            <span>{{ derive.spell }}</span>
-                            <span>{{ derive.meaning[0].function }}</span>
-                            <span>{{ derive.meaning[0].content }}</span>
-                        </li>
-                    </ul>
-                    <ul id="synonymous">
-                        <li v-for="s in synonymous">
-                            <span>{{ s.Function }}</span>
-                            <span>{{ s.mening }}</span>
-                            <ul>
-                                <li v-for="(spell, index) in s.spells">
-                                    <span>{{ spell }}</span>
-                                    <span v-if="index != s.spells.length">/</span>
-                                </li>
-                            </ul>
-                        </li>
-                    </ul>
-                    <ul id="notes">
-                        <li v-for="n in notes">
-                            <span>{{ n.content }}</span>
-                        </li>
-                    </ul>
-                    <ul>
-                        <li>
-                            <button>
-                                派生按钮
-                            </button>
-                        </li>
-                        <li>
-                            <button>
-                                近义按钮
-                            </button>
-                        </li>
-                        <li v-if="notes.length > 0">
-                            <button>
-                                笔记按钮
-                            </button>
-                        </li>
-                    </ul>
+                <div class="detailBox optionGrey">
+                    <div class="detail">
+                        <ul id="derive">
+                            <span style="position: absolute;left: 4px;scale: 0.65;color: #ff6f00;">&#9658;</span>
+                            <li><span>{{ nowSpell }}</span><span style="margin:0px 3px 0 26px ;">{{ nowMeaning[0].function }}</span><span>{{ nowMeaning[0].content }}</span></li>
+                            <li v-for="derive in deriveWords">
+                                <span>{{ derive.spell }}</span>
+                                <span style="margin:0px 3px 0 26px ;">{{ derive.meaning[0].function }}</span>
+                                <span>{{ derive.meaning[0].content }}</span>
+                            </li>
+                        </ul>
+                        <ul id="synonymous">
+                            <li v-for="s in synonymous">
+                                <span>{{ s.Function }}</span>
+                                <span>{{ s.mening }}</span>
+                                <ul>
+                                    <li v-for="(spell, index) in s.spells">
+                                        <span>{{ spell }}</span>
+                                        <span v-if="index != s.spells.length">/</span>
+                                    </li>
+                                </ul>
+                            </li>
+                        </ul>
+                        <ul id="notes">
+                            <li v-for="n in notes">
+                                <span>{{ n.content }}</span>
+                            </li>
+                        </ul>
+                    </div>
+                    <div class="detailButton">
+                        <ul>
+                            <li>
+                                <button class="deriveButton">
+                                    派生
+                                </button>
+                            </li>
+                            <li v-show="synonymous.length > 0">
+                                <button>
+                                    近义
+                                </button>
+                            </li>
+                            <li v-if="notes.length > 0">
+                                <button>
+                                    笔记
+                                </button>
+                            </li>
+                        </ul>
+                    </div>
+
                 </div>
             </div>
         </div>
@@ -698,12 +713,12 @@ function undoDeleteWord() {
                     <span>不认识</span>
                 </button>
             </div>
-            <div v-show="!question">
-                <button>
-                    <span>下一词</span>
+            <div class="questionButton" v-show="!question">
+                <button :class="{'left':flag,'mid':!flag}">
+                    <span  class="linedown2 ">下一词</span>
                 </button>
-                <button>
-                    <span>记错了</span>
+                <button class="right">
+                    <span v-show="flag" class="linedown1 fontGrey">记错了</span>
                 </button>
             </div>
         </div>

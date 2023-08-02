@@ -1,6 +1,13 @@
 * {
     padding: 0;
     margin: 0;
+    list-style: none;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    border: 0;
+    outline: none;
+    background-color: transparent;
 }
 
 .main {
@@ -60,6 +67,7 @@
 .spell {
     font-size: 34px;
     font-weight: 790;
+    margin-left: 40px;
 }
 
 .point {
@@ -136,7 +144,6 @@
     margin-left: auto;
     margin-top: 9px;
     margin-right: auto;
-    list-style: none;
     backdrop-filter: blur( 10.5px);
     -webkit-backdrop-filter: blur( 10.5px);
     border-radius: 9px;
@@ -202,4 +209,98 @@
 .linedown1:hover::after,
 .linedown2:hover::after {
     width: 30px;
+}
+
+.mean {
+    width: 80%;
+    margin-left: auto;
+    margin-right: auto;
+    text-align: center;
+}
+
+.meanFunction {
+    font-size: 17px;
+    font-weight: lighter;
+    font-family: cursive;
+    display: inline-block;
+    margin-bottom: 3px;
+}
+
+.meanWord {
+    font-size: 16px;
+    border-bottom: dotted grey;
+    display: inline-block;
+    height: 23px;
+}
+
+.sentenceBox {
+    height: 64px;
+    width: 400px;
+    border-radius: 10px;
+    margin-left: auto;
+    margin-top: 18px;
+    margin-right: auto;
+    padding-top: 17px;
+}
+
+.sentenceBox>div {
+    margin-left: 18px;
+}
+
+.detailBox {
+    position: relative;
+    margin: 14px auto 0 auto;
+    height: 300px;
+    width: 400px;
+    border-radius: 10px;
+    font-size: 15.9px;
+}
+
+.detailBox>.detail {
+    position: absolute;
+    top: 14px;
+    line-height: 28px;
+    padding-left: 4.8%;
+    width: 90%;
+}
+
+.detailBox>.detailButton {
+    position: absolute;
+    bottom: 7px;
+    left: 10px;
+}
+
+.deriveButton {
+    display: inline-block;
+    height: 29px;
+    font-size: 1px;
+    width: 41px;
+    border-radius: 6px;
+    background-color: rgb(255 255 255 / 84%);
+}
+
+.questionButton {
+    position: relative;
+    width: 308px;
+    margin: 32px auto 0 auto;
+}
+
+.left,
+.right {
+    position: relative;
+}
+
+.left {
+    top: 0;
+    left: 0;
+}
+
+.mid {
+    margin: 0 auto 0;
+    width: 100%;
+}
+
+.right {
+    top: 0;
+    right: -206px;
 }
