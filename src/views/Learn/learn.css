@@ -34,22 +34,45 @@
 
 .top {
     display: block;
+    height: 51px;
     overflow: hidden;
 }
 
 .outButton {
-    float: left;
-    position: relative;
+    cursor: pointer;
+    position: absolute;
+    left: 29px;
+    top: 15.2px;
+    scale: 1.4;
 }
 
 .reciteNum {
-    float: left;
-    position: relative;
+    position: absolute;
+    left: 55px;
+    top: 13.2px;
 }
 
 .functionButton {
     float: right;
     position: relative;
+    overflow: visible;
+}
+
+.star {
+    cursor: pointer;
+    position: relative;
+    overflow: visible;
+    top: 16.2px;
+    scale: 1.6;
+    right: 56px;
+}
+
+.delete {
+    cursor: pointer;
+    position: relative;
+    top: 15.7px;
+    right: 24px;
+    scale: 1.5;
 }
 
 .spell_count {
@@ -277,6 +300,7 @@
     width: 41px;
     border-radius: 6px;
     background-color: rgb(255 255 255 / 84%);
+    cursor: pointer;
 }
 
 .questionButton {
@@ -303,4 +327,11 @@
 .right {
     top: 0;
     right: -206px;
+}
+
+.noteAdd {
+    position: absolute;
+    right: 7px;
+    bottom: -2px;
+    cursor: pointer;
 }

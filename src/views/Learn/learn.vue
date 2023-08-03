@@ -249,7 +249,7 @@ function handleDerive(derives) {
     //衍生词
     //console.log(derives);
     for (var index = 0; index < derives.length; index++) {
-        //console.log("第"+index+"次循环"+derives[index].spell);
+        console.log("第"+index+"次循环"+derives[index].spell);
         deriveWords.value.push({ spell: derives[index].spell, meaning: derives[index].meanings });
     }
     console.log(deriveWords.value);
@@ -582,10 +582,10 @@ console.log(sentences.value.length);
                 <span>{{ recitedWordNum }}</span><span>/</span><span>{{ maxNum }}</span>
             </div>
             <div class="functionButton">
-                <button v-show="starValid" @click="deleteStar">已收藏</button>
-                <button v-show="!starValid" @click="addStar">收藏</button>
-                <button v-show="!deleteValid" @click="deleteWord">标熟</button>
-                <button v-show="deleteValid" @click="undoDeleteWord">已标熟</button>
+                <button v-show="starValid" @click="deleteStar" class="star"><el-icon><StarFilled /></el-icon></button>
+                <button v-show="!starValid" @click="addStar" class="star"><el-icon><Star /></el-icon></button>
+                <button v-show="!deleteValid" @click="deleteWord" class="delete"><el-icon><Delete /></el-icon></button>
+                <button v-show="deleteValid" @click="undoDeleteWord" class="delete"><el-icon><DeleteFilled /></el-icon></button>
             </div>
         </div>
         <div class="mid">
@@ -678,7 +678,7 @@ console.log(sentences.value.length);
                         </ul>
                     </div>
                     <div class="detailButton">
-                        <ul>
+                        <ul style="width: 384px;">
                             <li>
                                 <button class="deriveButton">
                                     派生
@@ -693,6 +693,9 @@ console.log(sentences.value.length);
                                 <button>
                                     笔记
                                 </button>
+                            </li>
+                            <li class="noteAdd">
+                                <el-icon><EditPen /></el-icon>
                             </li>
                         </ul>
                     </div>
