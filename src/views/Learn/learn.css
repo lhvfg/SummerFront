@@ -77,9 +77,7 @@
 
 .spell_count {
     display: flex;
-    margin-left: auto;
-    margin-right: auto;
-    width: 168px;
+    justify-content: center;
 }
 
 .spell_count>ul {
@@ -90,7 +88,6 @@
 .spell {
     font-size: 34px;
     font-weight: 790;
-    margin-left: 40px;
 }
 
 .point {
@@ -279,6 +276,24 @@
     font-size: 15.9px;
 }
 
+.detailShow,
+.detailLeft,
+.detailRight {
+    transition: all 0.6s;
+}
+
+.detailShow {
+    left: 0;
+}
+
+.detailLeft {
+    left: -400px;
+}
+
+.detailRight {
+    right: -400px;
+}
+
 .detailBox>.detail {
     position: absolute;
     top: 14px;
@@ -334,4 +349,20 @@
     right: 7px;
     bottom: -2px;
     cursor: pointer;
+}
+
+.el-button--text {
+    margin-right: 15px;
+}
+
+.el-select {
+    width: 300px;
+}
+
+.el-input {
+    width: 300px;
+}
+
+.dialog-footer button:first-child {
+    margin-right: 10px;
 }

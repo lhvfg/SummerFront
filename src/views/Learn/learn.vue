@@ -1,8 +1,7 @@
 <script setup>
-import { ref, reactive, onMounted } from 'vue'
+import { ref, reactive, onMounted, watch } from 'vue'
 import { useRouter } from "vue-router";
 import axios from "axios";
-import { ElMessage } from "element-plus";
 import { useUserStore } from "../../stores/User"
 
 const router = useRouter();
@@ -12,6 +11,9 @@ const Request = axios.create({
     withCredentials: true,
 });
 const store = useUserStore();
+const form = reactive({
+    data: ''
+})
 
 const userId = localStorage.getItem("userId");
 const bookId = localStorage.getItem("chooseBookId");
@@ -70,6 +72,7 @@ const sentences = ref([{
 const synonymous = ref([])
 //当前单词的笔记
 const notes = ref([])
+const newNote = ref();
 //当前在背第几轮
 let trun = 0;
 //现在在背的单词的id
@@ -94,10 +97,11 @@ let nowMeaning = [
 //现在选择的正确选项
 let ans;
 //用于选项样式变化
-const optionValid = ref([false]);
 let date = new Date();
 let startTime;
 
+const optionValid = ref([false]);
+const dialogFormVisible = ref(false)
 //问题界面显示的判定
 const question = ref(true);
 const tip1Valid = ref(false);
@@ -123,6 +127,8 @@ const deleteValid = ref(false);
 const ansValid = ref(false)
 //当前背对了没有
 let flag = null;
+//当前选中的
+const chooseDetail = ref([true, false, false])
 
 
 onMounted(() => {
@@ -249,7 +255,7 @@ function handleDerive(derives) {
     //衍生词
     //console.log(derives);
     for (var index = 0; index < derives.length; index++) {
-        console.log("第"+index+"次循环"+derives[index].spell);
+        console.log("第" + index + "次循环" + derives[index].spell);
         deriveWords.value.push({ spell: derives[index].spell, meaning: derives[index].meanings });
     }
     console.log(deriveWords.value);
@@ -568,10 +574,53 @@ function undoDeleteWord() {
             }
         })
 }
+function handleNote() {
+    dialogFormVisible.value = false;
+    let request = {
+        requestType: "addNote",
+        userId: userId,
+        wordId: wordId,
+        note: newNote.value
+    };
+    Request.post("/recite", request).then(
+        (res) => {
+            console.log(res);
+            if (res.data.status == "noteAddSuccess") {
+                notes.value.push({ content: newNote.value });
+                newNote.value = null;
+                ElMessage({
+                    type: "success",
+                    message: "添加笔记成功",
+                    duration: 2000,
+                });
+            }
+            else {
+                ElMessage({
+                    type: "error",
+                    message: "出错了",
+                    duration: 2000,
+                });
+            }
+        })
 
-console.log(sentences.value.length);
+}
 </script>
 <template>
+    <el-dialog v-model="dialogFormVisible" title="添加笔记" style="border-radius: 10px;">
+        <el-form :model="form">
+            <el-form-item>
+                <el-input v-model="newNote" autocomplete="off" />
+            </el-form-item>
+        </el-form>
+        <template #footer>
+            <span class="dialog-footer">
+                <el-button @click="dialogFormVisible = false">Cancel</el-button>
+                <el-button style="color: #606266;" type="primary" @click="handleNote()">
+                    Confirm
+                </el-button>
+            </span>
+        </template>
+    </el-dialog>
     <div class="main">
         <div class="inner"></div>
         <div class="top">
@@ -582,10 +631,18 @@ console.log(sentences.value.length);
                 <span>{{ recitedWordNum }}</span><span>/</span><span>{{ maxNum }}</span>
             </div>
             <div class="functionButton">
-                <button v-show="starValid" @click="deleteStar" class="star"><el-icon><StarFilled /></el-icon></button>
-                <button v-show="!starValid" @click="addStar" class="star"><el-icon><Star /></el-icon></button>
-                <button v-show="!deleteValid" @click="deleteWord" class="delete"><el-icon><Delete /></el-icon></button>
-                <button v-show="deleteValid" @click="undoDeleteWord" class="delete"><el-icon><DeleteFilled /></el-icon></button>
+                <button v-show="starValid" @click="deleteStar" class="star"><el-icon>
+                        <StarFilled />
+                    </el-icon></button>
+                <button v-show="!starValid" @click="addStar" class="star"><el-icon>
+                        <Star />
+                    </el-icon></button>
+                <button v-show="!deleteValid" @click="deleteWord" class="delete"><el-icon>
+                        <Delete />
+                    </el-icon></button>
+                <button v-show="deleteValid" @click="undoDeleteWord" class="delete"><el-icon>
+                        <DeleteFilled />
+                    </el-icon></button>
             </div>
         </div>
         <div class="mid">
@@ -601,7 +658,8 @@ console.log(sentences.value.length);
                 <div v-show="meaningValid" class="mean">
                     <ul>
                         <li v-for="mean in nowMeaning">
-                            <span class="meanFunction">{{ mean.function}}</span><span class="meanWord">{{ mean.content }}</span>
+                            <span class="meanFunction">{{ mean.function }}</span><span class="meanWord">{{ mean.content
+                            }}</span>
                         </li>
                     </ul>
                 </div>
@@ -650,32 +708,41 @@ console.log(sentences.value.length);
             <div v-show="answerValid" class="answer">
                 <div class="detailBox optionGrey">
                     <div class="detail">
-                        <ul id="derive">
-                            <span style="position: absolute;left: 4px;scale: 0.65;color: #ff6f00;">&#9658;</span>
-                            <li><span>{{ nowSpell }}</span><span style="margin:0px 3px 0 26px ;">{{ nowMeaning[0].function }}</span><span>{{ nowMeaning[0].content }}</span></li>
-                            <li v-for="derive in deriveWords">
-                                <span>{{ derive.spell }}</span>
-                                <span style="margin:0px 3px 0 26px ;">{{ derive.meaning[0].function }}</span>
-                                <span>{{ derive.meaning[0].content }}</span>
-                            </li>
-                        </ul>
-                        <ul id="synonymous">
-                            <li v-for="s in synonymous">
-                                <span>{{ s.Function }}</span>
-                                <span>{{ s.mening }}</span>
-                                <ul>
-                                    <li v-for="(spell, index) in s.spells">
-                                        <span>{{ spell }}</span>
-                                        <span v-if="index != s.spells.length">/</span>
-                                    </li>
-                                </ul>
-                            </li>
-                        </ul>
-                        <ul id="notes">
-                            <li v-for="n in notes">
-                                <span>{{ n.content }}</span>
-                            </li>
-                        </ul>
+                        <div :class="{ 'detailShow': chooseDetail[0], 'detailLeft': !chooseDetail[0] }">
+                            <ul id="derive">
+                                <span style="position: absolute;left: 4px;scale: 0.65;color: #ff6f00;">&#9658;</span>
+                                <li><span>{{ nowSpell }}</span><span style="margin:0px 3px 0 26px ;">{{
+                                    nowMeaning[0].function
+                                }}</span><span>{{ nowMeaning[0].content }}</span></li>
+                                <li v-for="derive in deriveWords">
+                                    <span>{{ derive.spell }}</span>
+                                    <span style="margin:0px 3px 0 26px ;">{{ derive.meaning[0].function }}</span>
+                                    <span>{{ derive.meaning[0].content }}</span>
+                                </li>
+                            </ul>
+                        </div>
+                        <div
+                            :class="{ 'detailShow': chooseDetail[1], 'detailLeft': !chooseDetail[1] && chooseDetail[2], 'detailRight': !chooseDetail[1] && chooseDetail[0] }">
+                            <ul id="synonymous">
+                                <li v-for="s in synonymous">
+                                    <span>{{ s.Function }}</span>
+                                    <span>{{ s.mening }}</span>
+                                    <ul>
+                                        <li v-for="(spell, index) in s.spells">
+                                            <span>{{ spell }}</span>
+                                            <span v-if="index != s.spells.length">/</span>
+                                        </li>
+                                    </ul>
+                                </li>
+                            </ul>
+                        </div>
+                        <div>
+                            <ul :class="{ 'detailShow': chooseDetail[2], 'detailRight': !chooseDetail[2] }" id="notes">
+                                <li v-for="n in notes">
+                                    <span>{{ n.content }}</span>
+                                </li>
+                            </ul>
+                        </div>
                     </div>
                     <div class="detailButton">
                         <ul style="width: 384px;">
@@ -695,12 +762,16 @@ console.log(sentences.value.length);
                                 </button>
                             </li>
                             <li class="noteAdd">
-                                <el-icon><EditPen /></el-icon>
+                                <el-button @click="dialogFormVisible = true">
+                                    <el-icon>
+                                        <EditPen />
+                                    </el-icon>
+                                </el-button>
                             </li>
                         </ul>
                     </div>
-
                 </div>
+
             </div>
         </div>
         <div class="buttonBox">
@@ -717,8 +788,8 @@ console.log(sentences.value.length);
                 </button>
             </div>
             <div class="questionButton" v-show="!question">
-                <button :class="{'left':flag,'mid':!flag}">
-                    <span  class="linedown2 ">下一词</span>
+                <button :class="{ 'left': flag, 'mid': !flag }">
+                    <span class="linedown2 ">下一词</span>
                 </button>
                 <button class="right">
                     <span v-show="flag" class="linedown1 fontGrey">记错了</span>
