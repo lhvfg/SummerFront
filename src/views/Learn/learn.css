@@ -207,6 +207,7 @@
     width: 100%;
     line-height: 131%;
     height: 100%;
+    cursor: pointer;
 }
 
 .linedown1::after,
@@ -296,7 +297,7 @@
 }
 
 .detailShow {
-    left: -2px;
+    left: 1px;
 }
 
 .detailLeft {

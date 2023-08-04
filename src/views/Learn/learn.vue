@@ -85,6 +85,8 @@ let nowSpell = '';
 let nowCount = 0;
 //当前背完了几个单词
 let recitedWordNum = ref(0);
+//还存在下一个的判定
+const nextOneValid = ref(true);
 //当前背的单词的释义
 let nowMeaning = [
     {
@@ -175,13 +177,25 @@ onMounted(() => {
         })
 })
 //初始化
-function handleData() {
+function handleData(num) {
     console.log(222);
-    //寻找数据
-    while (wordData.value[nowCount].length == 0 && nowCount < 3) {
-        console.log("nowCount++");
-        nowCount++;
-        nowNum = 0;
+    if (num == null) {
+        //初次进入寻找数据
+        while (wordData.value[nowCount].length == 0 && nowCount < 3) {
+            console.log("nowCount++");
+            nowCount++;
+            nowNum = 0;
+        }
+    }
+    else{
+        //再次进入，判断是否有数据
+        if(nowNum>wordData.value[nowCount].length)
+        {
+            if(nowCount == 2)
+            {
+
+            }
+        }
     }
     //找到数据
     if (wordData.value[nowCount].length > 0) {
@@ -320,6 +334,16 @@ function handleWrong() {
             (res) => {
                 console.log(res);
                 if (res.data.status == "countClear") {
+                    //修改flag
+                    if(flag)
+                    {
+                        flag = false;
+                    }
+                    //判断要不要修改背完判定
+                    if(nextOneValid.value)
+                    {
+                        nextOneValid.value = false;
+                    }
                     //处理显示绿球的数量
                     nowCount = 0;
                     handlePoint(nowCount);
@@ -361,6 +385,11 @@ function handleRight(i) {
                 //处理显示绿球的数量
                 handlePoint(nowCount + 1);
                 nowCount++;
+                //判断有没有背完
+                if(recitedWordNum.value == 10)
+                {
+                    nextOneValid.value = false;
+                }
             }
             else if (res.data.status != "countAdd") {
                 ElMessage({
@@ -445,7 +474,12 @@ function buttonChoose(i) {
 }
 //答题后判断下一个背什么单词
 function handleNextWord() {
-
+    if (nowCount == 3) {
+        nowCount = 0;
+    }
+    //只有点击了下一个才可以进行数组的修改
+    handleArray(flag, nowCount);
+    
 }
 //退出界面
 function reciteOver() {
@@ -719,13 +753,14 @@ function handleNote() {
                         <div :class="{ 'detailShow': chooseDetail[0], 'detailLeft': !chooseDetail[0] }">
                             <ul id="derive">
                                 <span style="position: absolute;left: 4px;scale: 0.65;color: #ff6f00;">&#9658;</span>
-                                <li><span>{{ nowSpell }}</span><span style="margin:0px 3px 0 26px ;">{{
+                                <li><span>{{ nowSpell }}</span><span style="margin:0px 3px 0 10px ;">{{
                                     nowMeaning[0].function
-                                }}</span><span>{{ nowMeaning[0].content }}</span></li>
+                                }}</span><span style="display: block;">{{ nowMeaning[0].content }}</span></li>
                                 <li v-for="derive in deriveWords">
+                                    <span style="position: absolute;left: 4px;scale: 0.65;color: #ff6f00;">&#9658;</span>
                                     <span>{{ derive.spell }}</span>
-                                    <span style="margin:0px 3px 0 26px ;">{{ derive.meaning[0].function }}</span>
-                                    <span>{{ derive.meaning[0].content }}</span>
+                                    <span style="margin:0px 3px 0 10px ;">{{ derive.meaning[0].function }}</span>
+                                    <span style="display: block;">{{ derive.meaning[0].content }}</span>
                                 </li>
                             </ul>
                         </div>
@@ -802,7 +837,8 @@ function handleNote() {
             </div>
             <div class="questionButton" v-show="!question">
                 <button :class="{ 'left': flag, 'mid': !flag }">
-                    <span class="linedown2" @click="nextWord()">下一词</span>
+                    <span v-show="nextOneValid" class="linedown2" @click="handleNextWord()">下一个</span>
+                    <span v-show="!nextOneValid" class="linedown2" @click="reciteOver()">完成</span>
                 </button>
                 <button class="right">
                     <span v-show="flag" class="linedown1 fontGrey" @click="handleWrong()">记错了</span>
@@ -813,4 +849,6 @@ function handleNote() {
 
     </div>
 </template>
-<style scoped>@import './learn.css';</style>
+<style scoped>
+@import './learn.css';
+</style>
