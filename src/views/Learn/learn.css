@@ -3,7 +3,7 @@
     margin: 0;
     list-style: none;
     white-space: nowrap;
-    overflow: hidden;
+    /* overflow: hidden; */
     text-overflow: ellipsis;
     border: 0;
     outline: none;
@@ -133,6 +133,12 @@
     transition: all 0.6s;
 }
 
+.meaningContent {
+    display: block;
+    text-overflow: ellipsis;
+    overflow: hidden;
+}
+
 .show {
     display: block;
 }
@@ -254,13 +260,13 @@
 }
 
 .sentenceBox {
-    height: 64px;
     width: 400px;
     border-radius: 10px;
     margin-left: auto;
     margin-top: 18px;
     margin-right: auto;
     padding-top: 17px;
+    padding-bottom: 33px;
 }
 
 .sentenceBox>div {
@@ -269,6 +275,8 @@
 
 .detailBox {
     position: relative;
+    overflow: hidden;
+    transition: all 0.5s;
     margin: 14px auto 0 auto;
     height: 300px;
     width: 400px;
@@ -279,11 +287,16 @@
 .detailShow,
 .detailLeft,
 .detailRight {
-    transition: all 0.6s;
+    transition: all 0.3s;
+    position: absolute;
+    padding-left: 20px;
+    top: 0px;
+    width: 366px;
+    overflow: hidden;
 }
 
 .detailShow {
-    left: 0;
+    left: -2px;
 }
 
 .detailLeft {
@@ -291,7 +304,7 @@
 }
 
 .detailRight {
-    right: -400px;
+    left: 500px;
 }
 
 .detailBox>.detail {
@@ -308,14 +321,22 @@
     left: 10px;
 }
 
-.deriveButton {
+.deriveButton,
+.synonymousButton,
+.noteButton {
+    transition: all 0.5s;
     display: inline-block;
     height: 29px;
     font-size: 1px;
     width: 41px;
     border-radius: 6px;
-    background-color: rgb(255 255 255 / 84%);
+    background-color: transparent;
     cursor: pointer;
+    margin-right: 4.5px;
+}
+
+.buttonWhite {
+    background-color: rgb(255 255 255 / 84%);
 }
 
 .questionButton {

@@ -127,7 +127,7 @@ const deleteValid = ref(false);
 const ansValid = ref(false)
 //当前背对了没有
 let flag = null;
-//当前选中的
+//当前选中的细节按钮
 const chooseDetail = ref([true, false, false])
 
 
@@ -197,6 +197,7 @@ function handleData() {
         handlePoint(nowCount);
         handleSentence(wordData.value[nowCount][nowNum].sentence);
         synonymous.value = wordData.value[nowCount][nowNum].synonymous;
+        console.log(synonymous.value);
         notes.value = wordData.value[nowCount][nowNum].notes
         handleShow();
     }
@@ -359,12 +360,9 @@ function handleRight(i) {
                 recitedWordNum.value++;
                 //处理显示绿球的数量
                 handlePoint(nowCount + 1);
+                nowCount++;
             }
-            else if (res.data.status == "countAdd") {
-                //处理显示绿球的数量
-                handlePoint(nowCount + 1);
-            }
-            else {
+            else if (res.data.status != "countAdd") {
                 ElMessage({
                     type: "error",
                     message: "出错了",
@@ -375,14 +373,11 @@ function handleRight(i) {
             setTimeout(() => {
                 toAnswer()
             }, 1500)
+            //处理显示绿球的数量
+            nowCount++;
+            handlePoint(nowCount);
         })
 
-}
-//答题后跳至答案界面
-function toAnswer() {
-    question.value = false;
-    answerValid.value = true;
-    handleShow();
 }
 //答题后处理数组
 function handleArray(flag, nowCount) {
@@ -434,6 +429,19 @@ function handleArray(flag, nowCount) {
 
         }
     }
+}
+//答题后跳至答案界面
+function toAnswer() {
+    question.value = false;
+    answerValid.value = true;
+    handleShow();
+}
+//选择某个细节按钮
+function buttonChoose(i) {
+    for (var j = 0; j < 3; j++) {
+        chooseDetail.value[j] = false;
+    }
+    chooseDetail.value[i] = true;
 }
 //答题后判断下一个背什么单词
 function handleNextWord() {
@@ -665,7 +673,7 @@ function handleNote() {
                 </div>
                 <ul v-show="sentenceValid" class="optionGrey sentenceBox">
                     <div>
-                        <li>{{ sentences[0].content }}</li>
+                        <li style="width: 372px;white-space: normal;">{{ sentences[0].content }}</li>
                         <li v-show="sentenceChineseValid" style="margin-top: 3px;font-size: 14px;">{{
                             sentences[0].contentMean }}</li>
                     </div>
@@ -683,7 +691,7 @@ function handleNote() {
                                 {{ deriveWord.meaning.function }}
                             </span>
                             <span v-show="!ansValid || ansValid && (!optionValid[index] && index != ans)"
-                                style="display: block;"
+                                class="meaningContent"
                                 :class="{ 'fontGrey': ansValid && !optionValid[index] && index != ans }">
                                 {{ deriveWord.meaning.content }}
                             </span>
@@ -725,12 +733,14 @@ function handleNote() {
                             :class="{ 'detailShow': chooseDetail[1], 'detailLeft': !chooseDetail[1] && chooseDetail[2], 'detailRight': !chooseDetail[1] && chooseDetail[0] }">
                             <ul id="synonymous">
                                 <li v-for="s in synonymous">
-                                    <span>{{ s.Function }}</span>
-                                    <span>{{ s.mening }}</span>
-                                    <ul>
-                                        <li v-for="(spell, index) in s.spells">
+                                    <span style="display: inline-block;margin-right: 3px;" class="fontGrey Function">{{
+                                        s.function }}</span>
+                                    <span style="display: inline-block;" class="fontGrey Function">{{ s.meaning }}</span>
+                                    <ul style="margin-top: -5px;">
+                                        <li style="display: inline-block;" class="fontGrey">{{ nowSpell }}</li>
+                                        <li v-for="(spell, index) in s.spells" style="display: inline-block;">
+                                            <span style="margin: 0 4px;">/</span>
                                             <span>{{ spell }}</span>
-                                            <span v-if="index != s.spells.length">/</span>
                                         </li>
                                     </ul>
                                 </li>
@@ -746,18 +756,21 @@ function handleNote() {
                     </div>
                     <div class="detailButton">
                         <ul style="width: 384px;">
-                            <li>
-                                <button class="deriveButton">
+                            <li style="display: inline-block;">
+                                <button class="deriveButton" :class="{ 'buttonWhite': chooseDetail[0] }"
+                                    @click="buttonChoose(0)">
                                     派生
                                 </button>
                             </li>
-                            <li v-show="synonymous.length > 0">
-                                <button>
+                            <li style="display: inline-block;" v-show="synonymous.length > 0">
+                                <button class="synonymousButton" :class="{ 'buttonWhite': chooseDetail[1] }"
+                                    @click="buttonChoose(1)">
                                     近义
                                 </button>
                             </li>
-                            <li v-if="notes.length > 0">
-                                <button>
+                            <li style="display: inline-block;" v-if="notes.length > 0">
+                                <button class="noteButton" :class="{ 'buttonWhite': chooseDetail[2] }"
+                                    @click="buttonChoose(2)">
                                     笔记
                                 </button>
                             </li>
@@ -789,10 +802,10 @@ function handleNote() {
             </div>
             <div class="questionButton" v-show="!question">
                 <button :class="{ 'left': flag, 'mid': !flag }">
-                    <span class="linedown2 ">下一词</span>
+                    <span class="linedown2" @click="nextWord()">下一词</span>
                 </button>
                 <button class="right">
-                    <span v-show="flag" class="linedown1 fontGrey">记错了</span>
+                    <span v-show="flag" class="linedown1 fontGrey" @click="handleWrong()">记错了</span>
                 </button>
             </div>
         </div>
@@ -800,6 +813,4 @@ function handleNote() {
 
     </div>
 </template>
-<style scoped>
-@import './learn.css';
-</style>
+<style scoped>@import './learn.css';</style>
