@@ -245,12 +245,23 @@
     text-align: center;
 }
 
-.meanFunction {
+.meanContent {
+    display: inline-block;
+}
+
+.meanBox {
+    background: linear-gradient(to right, rgba(255, 255, 255, 0.485), rgba(255, 255, 255, 0.08));
+    border-radius: 7px;
+}
+
+.meanFunction,
+.transprent {
     font-size: 17px;
     font-weight: lighter;
     font-family: cursive;
     display: inline-block;
     margin-bottom: 3px;
+    margin-right: 5px;
 }
 
 .meanWord {
@@ -258,6 +269,10 @@
     border-bottom: dotted grey;
     display: inline-block;
     height: 23px;
+}
+
+.transprent {
+    color: transparent;
 }
 
 .sentenceBox {
@@ -270,6 +285,10 @@
     padding-bottom: 33px;
 }
 
+.middle {
+    margin-top: 66px;
+}
+
 .sentenceBox>div {
     margin-left: 18px;
 }
@@ -279,7 +298,7 @@
     overflow: hidden;
     transition: all 0.5s;
     margin: 14px auto 0 auto;
-    height: 300px;
+    height: 390px;
     width: 400px;
     border-radius: 10px;
     font-size: 15.9px;
@@ -371,6 +390,27 @@
     right: 7px;
     bottom: -2px;
     cursor: pointer;
+}
+
+.promptBox {
+    position: relative;
+    margin-top: 138px;
+    left: 46%;
+}
+
+.prompt {
+    display: flex;
+    justify-content: center;
+    width: 40px;
+    height: 40px;
+    border-radius: 20px;
+    margin: 0 auto;
+}
+
+.promptFont {
+    display: inline-block;
+    margin-top: 16px;
+    font-size: 2px;
 }
 
 .el-button--text {

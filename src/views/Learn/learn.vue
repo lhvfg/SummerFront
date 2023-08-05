@@ -4,21 +4,21 @@ import { useRouter } from "vue-router";
 import axios from "axios";
 import { useUserStore } from "../../stores/User"
 
-const router = useRouter();
-const Request = axios.create({
+let router = useRouter();
+let Request = axios.create({
     baseURL: '/api',
     timeout: 3000,
     withCredentials: true,
 });
-const store = useUserStore();
-const form = reactive({
+let store = useUserStore();
+let form = reactive({
     data: ''
 })
 
-const userId = localStorage.getItem("userId");
-const bookId = localStorage.getItem("chooseBookId");
+let userId = localStorage.getItem("userId");
+let bookId = localStorage.getItem("chooseBookId");
 //接收后端数据
-const reciteWord = ref(
+let reciteWord = ref(
     [[
         {
             wordId: 0,
@@ -54,31 +54,29 @@ const reciteWord = ref(
     ]]
 )
 //实际选出的背诵单词
-const wordData = ref([[]]);
+let wordData = ref([[]]);
+//各wordData[count]没有数据的标识
+let countOver = [false, false, false];
 //背诵总数
 let maxNum = ref(10);
 //count0/1/2各数组长度
 let len = ref([]);
 //当前单词的派生词
-const deriveWords = ref([])
+let deriveWords = ref([])
 //当前单词的派生词选项
-const deriveOption = ref([])
+let deriveOption = ref([])
 //当前单词的例句
-const sentences = ref([{
+let sentences = ref([{
     content: '',
     contentMean: ''
 }])
 //当前单词的近义词
-const synonymous = ref([])
+let synonymous = ref([])
 //当前单词的笔记
-const notes = ref([])
-const newNote = ref();
-//当前在背第几轮
-let trun = 0;
+let notes = ref([])
+let newNote = ref();
 //现在在背的单词的id
 let wordId;
-//当前在背的是该count中的几个，从零开始
-let nowNum = 0;
 //现在在背的单词的拼写
 let nowSpell = '';
 //当前在背的是count几
@@ -86,7 +84,7 @@ let nowCount = 0;
 //当前背完了几个单词
 let recitedWordNum = ref(0);
 //还存在下一个的判定
-const nextOneValid = ref(true);
+let nextOneValid = ref(true);
 //当前背的单词的释义
 let nowMeaning = [
     {
@@ -101,36 +99,37 @@ let ans;
 //用于选项样式变化
 let date = new Date();
 let startTime;
-
-const optionValid = ref([false]);
-const dialogFormVisible = ref(false)
+//选线是否选择了
+let optionValid = ref([false]);
+//笔记添加是否可视
+let dialogFormVisible = ref(false)
 //问题界面显示的判定
-const question = ref(true);
-const tip1Valid = ref(false);
-const tip2Valid = ref(false);
+let question = ref(true);
+let tip1Valid = ref(false);
+let tip2Valid = ref(false);
 //单词释义显示的判定
-const meaningValid = ref(false);
+let meaningValid = ref(false);
 //释义选项显示的判定
-const meanChose = ref(false);
+let meanChose = ref(false);
 //释义选项被选中的判定
 let countFlag = ref([false]);
 //例句显示的判定
-const sentenceValid = ref(false);
+let sentenceValid = ref(false);
 //例句中文显示的判定
-const sentenceChineseValid = ref(false);
+let sentenceChineseValid = ref(false);
 //提示一下按钮
-const prompt = ref(false);
+let prompt = ref(false);
 //答案界面的判定
-const answerValid = ref(false);
+let answerValid = ref(false);
 //收藏与标熟的判定
-const starValid = ref(false);
-const deleteValid = ref(false);
+let starValid = ref(false);
+let deleteValid = ref(false);
 //显示选项答案的判定
-const ansValid = ref(false)
+let ansValid = ref(false)
 //当前背对了没有
 let flag = null;
 //当前选中的细节按钮
-const chooseDetail = ref([true, false, false])
+let chooseDetail = ref([true, false, false])
 
 
 onMounted(() => {
@@ -166,6 +165,7 @@ onMounted(() => {
                     maxNum.value = len[0] + len[1] + len[2];
                 }
                 handleData();
+                handleShow();
             }
             else {
                 ElMessage({
@@ -179,41 +179,34 @@ onMounted(() => {
 //初始化
 function handleData(num) {
     console.log(222);
+    //初次进入寻找数据
     if (num == null) {
-        //初次进入寻找数据
-        while (wordData.value[nowCount].length == 0 && nowCount < 3) {
-            console.log("nowCount++");
-            nowCount++;
-            nowNum = 0;
-        }
+        // while (wordData.value[nowCount].length == 0 && nowCount < 3) {
+        //     console.log("nowCount++");
+        //     nowCount++;
+        // }
+        nowCount = 1;
     }
-    else{
-        //再次进入，判断是否有数据
-        if(nowNum>wordData.value[nowCount].length)
-        {
-            if(nowCount == 2)
-            {
-
-            }
-        }
-    }
-    //找到数据
+    //处理数据
     if (wordData.value[nowCount].length > 0) {
-        nowCount = wordData.value[nowCount][nowNum].count;
-        nowSpell = wordData.value[nowCount][nowNum].spell;
-        wordId = wordData.value[nowCount][nowNum].wordId;
-        starValid.value = wordData.value[nowCount][nowNum].star;
-        nowMeaning = wordData.value[nowCount][nowNum].meaning;
-        //console.log(reciteWord.value[nowCount][nowNum].derived[0].spell);
-        //console.log(reciteWord.value[nowCount][nowNum].derived[0].meanings);
-        handleDerive(wordData.value[nowCount][nowNum].derived);
+        nowCount = wordData.value[nowCount][0].count;
+        nowSpell = wordData.value[nowCount][0].spell;
+        wordId = wordData.value[nowCount][0].wordId;
+        starValid.value = wordData.value[nowCount][0].star;
+        nowMeaning = wordData.value[nowCount][0].meaning;
+        //console.log(reciteWord.value[nowCount][0].derived[0].spell);
+        //console.log(reciteWord.value[nowCount][0].derived[0].meanings);
+        handleDerive(wordData.value[nowCount][0].derived);
         //处理显示绿球的数量
         handlePoint(nowCount);
-        handleSentence(wordData.value[nowCount][nowNum].sentence);
-        synonymous.value = wordData.value[nowCount][nowNum].synonymous;
+        handleSentence(wordData.value[nowCount][0].sentence);
+        synonymous.value = wordData.value[nowCount][0].synonymous;
         console.log(synonymous.value);
-        notes.value = wordData.value[nowCount][nowNum].notes
-        handleShow();
+        notes.value = wordData.value[nowCount][0].notes
+
+    }
+    else {
+        console.log("handleData出错,count判定出错");
     }
 }
 //处理绿球显示
@@ -231,16 +224,18 @@ function handleShow() {
             meaningValid.value = false;
             meanChose.value = true;
             sentenceValid.value = false;
+            sentenceChineseValid.value = false;
             prompt.value = false;
             answerValid.value = false;
         }
         else if (nowCount == 1) {
-            tip1Valid.value = true;
+            tip1Valid.value = false;
             tip2Valid.value = false;
-            meaningValid.value = false;
-            meanChose.value = true;
-            sentenceValid.value = false;
-            prompt.value = false;
+            meaningValid.value = true;
+            meanChose.value = false;
+            sentenceValid.value = true;
+            sentenceChineseValid.value = false;
+            prompt.value = true;
             answerValid.value = false;
         }
         else if (nowCount == 2) {
@@ -249,7 +244,7 @@ function handleShow() {
             meaningValid.value = false;
             meanChose.value = true;
             sentenceValid.value = false;
-            prompt.value = false;
+            prompt.value = true;
             answerValid.value = false;
         }
     }
@@ -321,7 +316,7 @@ function handleChick(index) {
         }
     }
 }
-//答错了总处理
+//答错总处理
 function handleWrong() {
     if (nowCount != 0) {
         //向后端发送请求
@@ -334,19 +329,8 @@ function handleWrong() {
             (res) => {
                 console.log(res);
                 if (res.data.status == "countClear") {
-                    //修改flag
-                    if(flag)
-                    {
-                        flag = false;
-                    }
-                    //判断要不要修改背完判定
-                    if(nextOneValid.value)
-                    {
-                        nextOneValid.value = false;
-                    }
                     //处理显示绿球的数量
-                    nowCount = 0;
-                    handlePoint(nowCount);
+                    handlePoint(0);
                 }
                 else {
                     ElMessage({
@@ -382,12 +366,8 @@ function handleRight(i) {
             if (res.data.status == "wordRecite") {
                 //背诵数据加一
                 recitedWordNum.value++;
-                //处理显示绿球的数量
-                handlePoint(nowCount + 1);
-                nowCount++;
                 //判断有没有背完
-                if(recitedWordNum.value == 10)
-                {
+                if (recitedWordNum.value == 10) {
                     nextOneValid.value = false;
                 }
             }
@@ -397,18 +377,56 @@ function handleRight(i) {
                     message: "出错了",
                     duration: 2000,
                 });
+                return;
             }
             //短暂停留后变更显示
             setTimeout(() => {
                 toAnswer()
             }, 1500)
             //处理显示绿球的数量
-            nowCount++;
-            handlePoint(nowCount);
+            handlePoint(nowCount + 1);
         })
 
 }
-//答题后处理数组
+//答对后记错总处理
+function handleReciteWrong() {
+    //count虽然在前端没有修改，但在后端已经发送请求修改了，这样做好在如果答对一题中途退出也不会出现count没有改变的情况
+    //后端count>0,一定要发请求的
+    let request = {
+        requestType: "wrong",
+        userId: userId,
+        wordId: wordId
+    }
+    Request.post("/recite", request).then(
+        (res) => {
+            console.log(res);
+            if (res.data.status == "countClear") {
+                //处理显示绿球的数量
+                handlePoint(0);
+                //如果之前reciteWordNum+1了
+                if (nowCount == 2) {
+                    recitedWordNum.value--;
+                    //判断要不要修改背完判定
+                    if (nextOneValid.value) {
+                        nextOneValid.value = false;
+                    }
+                }
+                //修改flag
+                if (flag) {
+                    flag = false;
+                }
+            }
+            else {
+                ElMessage({
+                    type: "error",
+                    message: "出错了",
+                    duration: 2000,
+                });
+            }
+        })
+
+}
+//点击下一个后处理数组,此时nowCount还没有改变
 function handleArray(flag, nowCount) {
     if (flag == null) {
         return;
@@ -416,22 +434,30 @@ function handleArray(flag, nowCount) {
     //答对了
     if (flag) {
         switch (nowCount) {
-            case 0:
-                {
-                    //取出首个，加到另一个数组末尾
-                    const temp = wordData.value[0].shift();
-                    wordData.value[1].push(temp);
-                    break;
+            case 0: {
+                //取出首个，加到另一个数组末尾
+                let temp = wordData.value[0].shift();
+                wordData.value[1].push(temp);
+                if (wordData.value[0].length == 0) {
+                    countOver[0] = true;
                 }
+                break;
+            }
             case 1: {
                 //取出首个，加到另一个数组末尾
-                const temp = wordData.value[1].shift();
+                let temp = wordData.value[1].shift();
                 wordData.value[2].push(temp);
+                if (wordData.value[1].length == 0) {
+                    countOver[1] = true;
+                }
                 break;
             }
             case 2: {
                 //取出首个
                 wordData.value[2].shift();
+                if (wordData.value[2].length == 0) {
+                    countOver[2] = true;
+                }
                 break;
             }
 
@@ -439,24 +465,29 @@ function handleArray(flag, nowCount) {
     }
     //答错了,取出首个，加到数组末尾
     else {
-        switch (nowCount) {
-            case 0: {
-                const temp = wordData.value[0].shift();
-                wordData.value[0].push(temp);
-                break;
-            }
-            case 1: {
-                const temp = wordData.value[1].shift();
-                wordData.value[1].push(temp);
-                break;
-            }
-            case 2: {
-                const temp = wordData.value[2].shift();
-                wordData.value[2].push(temp);
-                break;
-            }
-
+        let temp = wordData.value[nowCount].shift();
+        wordData.value[nowCount].push(temp);
+    }
+}
+//处理数组后判断下一个要背的单词是count几
+function handleNowCount(f, count) {
+    //理论情况下进入这个方法一定是有单词还要背的
+    //答对了
+    if (f && (!countOver[0] || !countOver[1] || !countOver[2])) {
+        count >= 2 ? count = 0 : count++;
+        while (countOver[count]) {
+            count == 2 ? count = 0 : count++;
         }
+        nowCount = count;
+        console.log("判定后nowCount为" + nowCount);
+    }
+    //答错了,count不用变
+    else if ((!f) && (!countOver[0] || !countOver[1] || !countOver[2])) {
+        console.log("判定后nowCount为" + nowCount);
+        return;
+    }
+    else {
+        console.log("啥都不对");
     }
 }
 //答题后跳至答案界面
@@ -472,14 +503,20 @@ function buttonChoose(i) {
     }
     chooseDetail.value[i] = true;
 }
-//答题后判断下一个背什么单词
+//答题后判断下一个背什么单词,能进入这个方法说明还有单词没背完
 function handleNextWord() {
-    if (nowCount == 3) {
-        nowCount = 0;
+    //如果这个单词标熟了,但之前背错了,要把flag修改成true
+    if (deleteValid.value && !flag) {
+        flag = true;
     }
-    //只有点击了下一个才可以进行数组的修改
+    //只有明确了现在有没有背错才可以进行数组的修改
     handleArray(flag, nowCount);
-    
+    handleNowCount(flag, nowCount);
+    handleClear();
+    handleData(1);
+    question.value = true;
+    answerValid.value = false;
+    handleShow();
 }
 //退出界面
 function reciteOver() {
@@ -580,6 +617,14 @@ function deleteWord() {
                     duration: 2000,
                 });
                 deleteValid.value = true;
+                //如果不是背完的单词标熟，背过的单词数加一
+                if (nowCount != 3) {
+                    recitedWordNum.value++;
+                    if (recitedWordNum.value == 10) {
+                        reciteOver();
+                    }
+                }
+                handleNextWord();
             }
             else {
                 ElMessage({
@@ -606,6 +651,9 @@ function undoDeleteWord() {
                     duration: 2000,
                 });
                 deleteValid.value = false;
+                //如果不是背完的单词取消标熟，背过的单词数减一
+                if (nowCount != 3)
+                    recitedWordNum.value--;
             }
             else {
                 ElMessage({
@@ -645,6 +693,31 @@ function handleNote() {
             }
         })
 
+}
+//一些变量的重置
+function handleClear() {
+    flag = null;
+    optionValid = ref([false]);
+    ansValid = ref(false)
+    chooseDetail = ref([true, false, false])
+    deriveWords = ref([])
+    deriveOption = ref([])
+    sentences = ref([{
+        content: '',
+        contentMean: ''
+    }])
+    synonymous = ref([])
+    notes = ref([])
+    newNote = ref();
+    nowMeaning = [
+        {
+            content: '',
+            function: '',
+            id: 0,
+            wordId: 0
+        }
+    ]
+    countFlag = ref([false]);
 }
 </script>
 <template>
@@ -698,14 +771,16 @@ function handleNote() {
                     </ul>
                 </div>
                 <div v-show="meaningValid" class="mean">
-                    <ul>
-                        <li v-for="mean in nowMeaning">
-                            <span class="meanFunction">{{ mean.function }}</span><span class="meanWord">{{ mean.content
-                            }}</span>
+                    <ul style="display: flex;justify-content: center;flex-direction: column;">
+                        <li class="meanContent" v-for="mean in nowMeaning">
+                            <div style="display: inline;" class="meanBox">
+                                <span :class="{'meanFunction':nowCount!=1,'transprent':nowCount == 1}">{{ mean.function }}</span><span :class="{'meanWord':nowCount!=1,'transprent':nowCount == 1}">{{ mean.content
+                                }}</span>
+                            </div>
                         </li>
                     </ul>
                 </div>
-                <ul v-show="sentenceValid" class="optionGrey sentenceBox">
+                <ul v-show="sentenceValid" class="optionGrey sentenceBox" :class="{'middle':nowCount == 1}">
                     <div>
                         <li style="width: 372px;white-space: normal;">{{ sentences[0].content }}</li>
                         <li v-show="sentenceChineseValid" style="margin-top: 3px;font-size: 14px;">{{
@@ -738,13 +813,18 @@ function handleNote() {
                                     <Check style="scale: 1.2;margin-left: 17px;overflow: visible;" />
                                 </el-icon>
                             </span>
-                            <span v-show="optionValid[index] || (ansValid && index == ans)" class="Function">
+                            <span v-show="optionValid[index] || (ansValid && index == ans)" class="Function"
+                                style="overflow: hidden;">
                                 {{ deriveWord.meaning.function }}{{ deriveWord.meaning.content }}
                             </span>
                         </div>
                     </li>
                 </ul>
-                <button v-show="prompt">提示一下</button>
+                <button v-show="prompt" class="promptBox">
+                    <div class="optionGrey prompt"><el-icon style="scale: 1.5;margin-top: 13px;">
+                            <Search />
+                        </el-icon></div><span class="fontGrey promptFont">提示一下</span>
+                </button>
                 <span v-show="tip2Valid">tip2</span>
             </div>
             <div v-show="answerValid" class="answer">
@@ -828,12 +908,14 @@ function handleNote() {
                     <span v-show="!ansValid" class="linedown1" style="font-size: 17px;" @click="ansValid = true">看答案</span>
                     <span v-show="ansValid" class="linedown2" style="font-size: 17px;" @click="toAnswer()">继续</span>
                 </button>
-                <button v-show="nowCount != 0">
-                    <span>认识</span>
-                </button>
-                <button v-show="nowCount != 0">
-                    <span>不认识</span>
-                </button>
+                <div class="questionButton">
+                    <button v-show="nowCount != 0">
+                        <span class="linedown2 left" style="font-size: 17px;">认识</span>
+                    </button>
+                    <button v-show="nowCount != 0">
+                        <span class="linedown1 right" style="font-size: 17px;">不认识</span>
+                    </button>
+                </div>
             </div>
             <div class="questionButton" v-show="!question">
                 <button :class="{ 'left': flag, 'mid': !flag }">
@@ -841,7 +923,7 @@ function handleNote() {
                     <span v-show="!nextOneValid" class="linedown2" @click="reciteOver()">完成</span>
                 </button>
                 <button class="right">
-                    <span v-show="flag" class="linedown1 fontGrey" @click="handleWrong()">记错了</span>
+                    <span v-show="flag" class="linedown1 fontGrey" @click="handleReciteWrong()">记错了</span>
                 </button>
             </div>
         </div>
@@ -849,6 +931,4 @@ function handleNote() {
 
     </div>
 </template>
-<style scoped>
-@import './learn.css';
-</style>
+<style scoped>@import './learn.css';</style>
