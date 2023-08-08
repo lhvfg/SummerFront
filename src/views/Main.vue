@@ -26,16 +26,24 @@ const nowDay = computed(() => weeks.value[new Date().getDay()]);
 const successive = ref(1);
 
 onMounted(()=>{
-    let request = {
+    let request1 = {
+        requestType: "getNum",
+        bookId:bookId.value,
+        userId:userId.value,
+        today:store.Today
+    };
+    let request2 = {
         requestType: "getNum",
         bookId:bookId.value,
         userId:userId.value
     };
-    Request.post("/review", request).then(
+    Request.post("/review", request1).then(
         (res) => {
             console.log(res);
             if (res.data.status == 'reciteNumSuccess') {
                 reviewNum.value = res.data.wordNum;
+                store.$patch({reviewNum : reviewNum.value});
+                console.log(store.$state.reviewNum);
             }
             else if (res.data.status == 'block'){
                 router.push('/login');
@@ -53,7 +61,7 @@ onMounted(()=>{
                     });
             }
         })
-        Request.post("/recite", request).then(
+        Request.post("/recite", request2).then(
         (res) => {
             console.log(res);
             if (res.data.status == 'learnNumSuccess') {
@@ -86,6 +94,11 @@ function manageContent(){
         router.push('/contentManager');
     }, 500); 
 }
+function Review() {
+    setTimeout(() => {
+        router.push('/review');
+    }, 500);
+}
 </script>
 <template>
     <div class="allbox">
@@ -112,7 +125,6 @@ function manageContent(){
                     <span style="left: -19px;" class="word">Review</span>
                     <span class="red">{{ reviewNum }}</span>
                 </div>
-
             </el-button>
         </div>
         <div class="button">

@@ -182,11 +182,10 @@ function handleData(num) {
     console.log(222);
     //初次进入寻找数据
     if (num == null) {
-        // while (wordData.value[nowCount].length == 0 && nowCount < 3) {
-        //     console.log("nowCount++");
-        //     nowCount++;
-        // }
-        nowCount = 0;
+        while (wordData.value[nowCount].length == 0 && nowCount < 3) {
+            console.log("nowCount++");
+            nowCount++;
+        }
     }
     //处理数据
     if (wordData.value[nowCount].length > 0) {
@@ -348,7 +347,7 @@ function handleWrong() {
 }
 //答对总处理
 function handleRight(i) {
-    console.log("答对了，向后端发请求时count等于"+i);
+    console.log("答对了，向后端发请求时count等于" + i);
     //向后端发送请求
     let request;
     if (i == 0 || i == 1) {
@@ -373,7 +372,7 @@ function handleRight(i) {
                 //背诵数据加一
                 recitedWordNum.value++;
                 //判断有没有背完
-                if (recitedWordNum.value == 10) {
+                if (recitedWordNum.value == maxNum.value) {
                     nextOneValid.value = false;
                 }
             }
@@ -386,18 +385,15 @@ function handleRight(i) {
                 return;
             }
             //短暂停留后变更显示
-            if(i==0)
-            {
+            if (i == 0) {
                 setTimeout(() => {
-                toAnswer()
-            }, 1500)
+                    toAnswer()
+                }, 1500)
             }
-            else if(i == 1)
-            {
+            else if (i == 1) {
                 toAnswer()
             }
-            else if(i == 2)
-            {
+            else if (i == 2) {
                 toAnswer();
             }
             //处理显示绿球的数量
@@ -489,8 +485,7 @@ function handleArray(flag, nowCount) {
         wordData.value[0].push(temp);
     }
     console.log("现在数组里：");
-    for(var i =0;i<3;i++)
-    {
+    for (var i = 0; i < 3; i++) {
         console.log(wordData.value[i]);
     }
 }
@@ -549,7 +544,7 @@ function handleNextWord() {
     handleShow();
 }
 //提示一下显示例句中文
-function promptUse(){
+function promptUse() {
     sentenceChineseValid.value = true;
     promptUsed = true;
 }
@@ -809,14 +804,17 @@ function handleClear() {
                 <div v-show="meaningValid" class="mean">
                     <ul style="display: flex;justify-content: center;flex-direction: column;">
                         <li class="meanContent" v-for="mean in nowMeaning">
-                            <div style="display: inline;" :class="{'meanBox':(nowCount == 1||nowCount == 2)&&flag == null}">
-                                <span class="meanFunction" :class="{'transprent':(nowCount == 1||nowCount == 2)&&flag == null}">{{ mean.function }}</span><span class="meanWord" :class="{'transprent':(nowCount == 1||nowCount == 2)&&flag == null}">{{ mean.content
-                                }}</span>
+                            <div style="display: inline;" :class="{ 'meanBox': (nowCount == 1 || nowCount == 2) && flag == null }">
+                                <span class="meanFunction"
+                                    :class="{ 'transprent': (nowCount == 1 || nowCount == 2) && flag == null }">{{ mean.function
+                                    }}</span><span class="meanWord"
+                                    :class="{ 'transprent': (nowCount == 1 || nowCount == 2) && flag == null }">{{ mean.content
+                                    }}</span>
                             </div>
                         </li>
                     </ul>
                 </div>
-                <ul v-show="sentenceValid" class="optionGrey sentenceBox" :class="{'middle':nowCount == 1&&flag == null}">
+                <ul v-show="sentenceValid" class="optionGrey sentenceBox" :class="{ 'middle': nowCount == 1 && flag == null }">
                     <div>
                         <li style="width: 372px;white-space: normal;">{{ sentences[0].content }}</li>
                         <li v-show="sentenceChineseValid" style="margin-top: 3px;font-size: 14px;">{{
@@ -856,13 +854,16 @@ function handleClear() {
                         </div>
                     </li>
                 </ul>
-                <button v-show="prompt"  class="promptBox" @click="promptUse()">
+                <button v-show="prompt" class="promptBox" @click="promptUse()">
                     <div class="optionGrey prompt" v-if="!promptUsed">
-                        <el-icon style="scale: 1.5;margin-top: 13px;"><Search /></el-icon>
+                        <el-icon style="scale: 1.5;margin-top: 13px;">
+                            <Search />
+                        </el-icon>
                     </div>
-                    <span class="fontGrey promptFont"  v-if="!promptUsed">提示一下</span>
+                    <span class="fontGrey promptFont" v-if="!promptUsed">提示一下</span>
                 </button>
-                <span v-show="tip2Valid" class="tip2" >本词最后一关<img class="winkSmile" src="../../../public/093E7A6B.png">:请在无提示的情况下判断</span>
+                <span v-show="tip2Valid" class="tip2">本词最后一关<img class="winkSmile"
+                        src="../../../public/093E7A6B.png">:请在无提示的情况下判断</span>
             </div>
             <div v-show="answerValid" class="answer">
                 <div class="detailBox optionGrey">
@@ -942,7 +943,8 @@ function handleClear() {
         <div class="buttonBox">
             <div v-show="question">
                 <button class="seeAnswer" v-show="nowCount == 0">
-                    <span v-show="!ansValid" class="linedown1" style="font-size: 17px;" @click="ansValid = true,flag = false">看答案</span>
+                    <span v-show="!ansValid" class="linedown1" style="font-size: 17px;"
+                        @click="ansValid = true, flag = false">看答案</span>
                     <span v-show="ansValid" class="linedown2" style="font-size: 17px;" @click="toAnswer()">继续</span>
                 </button>
                 <div class="questionButton">
@@ -950,7 +952,7 @@ function handleClear() {
                         <span class="linedown2 left" style="font-size: 17px;" @click="handleRight(nowCount)">认识</span>
                     </button>
                     <button v-show="nowCount != 0">
-                        <span class="linedown1 right" style="font-size: 17px;" @click="handleWrong(),toAnswer()">不认识</span>
+                        <span class="linedown1 right" style="font-size: 17px;" @click="handleWrong(), toAnswer()">不认识</span>
                     </button>
                 </div>
             </div>
@@ -968,4 +970,4 @@ function handleClear() {
 
     </div>
 </template>
-<style scoped>@import './learn.css';</style>
+<style scoped>@import './recite.css';</style>

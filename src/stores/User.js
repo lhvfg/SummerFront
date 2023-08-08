@@ -12,7 +12,8 @@ export const useUserStore = defineStore(
             allTime: "0",
             teamId: null,
             chooseBookId: null,
-            nowDay: null
+            nowDay: null,
+            reviewNum: 0
         }),
         actions: {
             setUserId(id) {
@@ -27,6 +28,12 @@ export const useUserStore = defineStore(
             RandomNum: (max) => {
                 return Math.floor(Math.random() * max);
             },
+            Today: () => {
+                let yy = new Date().getFullYear();
+                let mm = new Date().getMonth() + 1;
+                let dd = new Date().getDate();
+                return yy + '-' + (mm < 10 ? '0' + mm : mm) + '-' + (dd < 10 ? '0' + dd : dd);
+            }
         },
     }
 )
