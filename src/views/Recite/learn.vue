@@ -550,7 +550,6 @@ function promptUse() {
 }
 //退出界面
 function reciteOver() {
-    router.push('/main');
     let seconds = Math.floor(parseInt(new Date().getTime() / 1000) - startTime);
     let request = {
         requestType: "reciteOver",
@@ -568,6 +567,7 @@ function reciteOver() {
                     message: "背诵数据已更新！",
                     duration: 2000,
                 });
+                router.push('/main');
             }
             else {
                 ElMessage({

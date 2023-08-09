@@ -149,7 +149,8 @@
 }
 
 .tip1,
-.tip2 {
+.tip2,
+.tip3 {
     position: relative;
     display: block;
     font-size: 12px;
@@ -159,7 +160,8 @@
     left: 6px;
 }
 
-.tip2 {
+.tip2,
+.tip3 {
     margin-top: 300px;
     margin-bottom: 40px;
 }
@@ -438,6 +440,63 @@
     display: inline-block;
     margin-top: 16px;
     font-size: 2px;
+}
+
+.flexBox {
+    display: flex;
+    justify-content: center;
+    flex-direction: column;
+    text-align: center;
+}
+
+.overSmile {
+    transform: scale(0.2);
+    margin: -169px;
+    margin-top: -155px;
+    position: relative;
+    left: 44.6%;
+}
+
+.overDetailTitle,
+.overDetailContent {
+    position: relative;
+    width: 80%;
+    margin: 0 auto;
+}
+
+.overDetailTitle {
+    font-size: 15px;
+    border-top: 0.2px solid black;
+    height: 33px;
+    line-height: 40px;
+}
+
+.overDetailContent {
+    border-bottom: 0.2px solid black;
+    padding-bottom: 13px;
+    margin-bottom: 20px;
+}
+
+.overWord {
+    position: absolute;
+    left: 300px;
+}
+
+.overTime {
+    position: absolute;
+    right: 261px;
+    font-weight: lighter;
+    color: #505050;
+    font-family: inherit;
+}
+
+.overButton {
+    border: 1px solid #cbcbcb;
+    height: 37px;
+    font-size: 14px;
+    width: 122px;
+    border-radius: 18.5px;
+    cursor: pointer;
 }
 
 .el-button--text {

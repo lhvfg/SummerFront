@@ -1,5 +1,5 @@
 <script setup>
-import { ref, reactive, computed,onMounted } from 'vue';
+import { ref, reactive, computed, onMounted } from 'vue';
 import { useRouter } from "vue-router";
 import axios from "axios";
 import { useUserStore } from "../stores/User"
@@ -10,7 +10,7 @@ const router = useRouter();
 const learnNum = ref(0);
 const reviewNum = ref(0);
 const Request = axios.create({
-    baseURL:'/api',
+    baseURL: '/api',
     timeout: 3000,
     withCredentials: true,
 });
@@ -25,79 +25,97 @@ const weeks = ref(["Sun.", "Mon.", "Tues.", "Wed.", "Thur.", "Fri.", "Sat."]);
 const nowDay = computed(() => weeks.value[new Date().getDay()]);
 const successive = ref(1);
 
-onMounted(()=>{
+onMounted(() => {
     let request1 = {
         requestType: "getNum",
-        bookId:bookId.value,
-        userId:userId.value,
-        today:store.Today
+        bookId: bookId.value,
+        userId: userId.value,
+        today: store.Today
     };
     let request2 = {
         requestType: "getNum",
-        bookId:bookId.value,
-        userId:userId.value
+        bookId: bookId.value,
+        userId: userId.value
     };
     Request.post("/review", request1).then(
         (res) => {
             console.log(res);
             if (res.data.status == 'reciteNumSuccess') {
                 reviewNum.value = res.data.wordNum;
-                store.$patch({reviewNum : reviewNum.value});
+                store.$patch({ reviewNum: reviewNum.value });
                 console.log(store.$state.reviewNum);
             }
-            else if (res.data.status == 'block'){
+            else if (res.data.status == 'block') {
                 router.push('/login');
                 ElMessage({
-                        type: "error",
-                        message: "登陆过期或未登录！",
-                        duration: 2000,
-                    });
+                    type: "error",
+                    message: "登陆过期或未登录！",
+                    duration: 2000,
+                });
             }
             else {
                 ElMessage({
-                        type: "error",
-                        message: "出错了",
-                        duration: 2000,
-                    });
+                    type: "error",
+                    message: "出错了",
+                    duration: 2000,
+                });
             }
         })
-        Request.post("/recite", request2).then(
+    Request.post("/recite", request2).then(
         (res) => {
             console.log(res);
             if (res.data.status == 'learnNumSuccess') {
                 learnNum.value = res.data.wordNum;
             }
-            else if (res.data.status == 'block'){
+            else if (res.data.status == 'block') {
                 router.push('/login');
                 ElMessage({
-                        type: "error",
-                        message: "登陆过期或未登录！",
-                        duration: 2000,
-                    });
+                    type: "error",
+                    message: "登陆过期或未登录！",
+                    duration: 2000,
+                });
             }
             else {
                 ElMessage({
-                        type: "error",
-                        message: "出错了",
-                        duration: 2000,
-                    });
+                    type: "error",
+                    message: "出错了",
+                    duration: 2000,
+                });
             }
         })
 })
 function Learn() {
-    setTimeout(() => {
-        router.push('/learn');
-    }, 500);
+    if (learnNum.value>0) {
+        setTimeout(() => {
+            router.push('/learn');
+        }, 500);
+    }
+    else{
+        ElMessage({
+            type: "error",
+            message: "没有要学习的单词！",
+            duration: 2000,
+        });
+    }
 }
-function manageContent(){
+function manageContent() {
     setTimeout(() => {
         router.push('/contentManager');
-    }, 500); 
+    }, 500);
 }
 function Review() {
-    setTimeout(() => {
-        router.push('/review');
-    }, 500);
+    if (reviewNum.value > 0) {
+        setTimeout(() => {
+            router.push('/review');
+        }, 500);
+    }
+    else {
+        ElMessage({
+            type: "error",
+            message: "没有要复习的单词！",
+            duration: 2000,
+        });
+    }
 }
 </script>
 <template>
@@ -201,7 +219,7 @@ function Review() {
     color: rgb(255, 98, 0);
     position: relative;
     font-size: 17px;
-    left: -42.7px;
+    left: -45.7px;
 }
 
 .studyButton {

@@ -555,7 +555,7 @@ function handleNextWord() {
     answerValid.value = false;
     handleShow();
 }
-//退出界面
+//进入结算界面
 function reciteOver() {
     let seconds = Math.floor(parseInt(new Date().getTime() / 1000) - startTime);
     let request = {
@@ -570,6 +570,38 @@ function reciteOver() {
             console.log(res);
             if (res.data.status == "timeNumChanged") {
                 overShowValid.value = true;
+            }
+            else {
+                ElMessage({
+                    type: "error",
+                    message: "出错了",
+                    duration: 2000,
+                });
+            }
+        })
+}
+//回到主页面
+function backToMain(){
+    let seconds = Math.floor(parseInt(new Date().getTime() / 1000) - startTime);
+    let request = {
+        requestType: "reciteOver",
+        time: seconds,
+        number: recitedWordNum.value,
+        userId: userId
+    }
+    console.log(seconds);
+    Request.post("/recite", request).then(
+        (res) => {
+            console.log(res);
+            if (res.data.status == "timeNumChanged") {
+                setTimeout(()=>{
+                    router.push('/main');
+                },500)
+                ElMessage({
+                    type: "success",
+                    message: "背诵数据已更新！",
+                    duration: 2000,
+                });
             }
             else {
                 ElMessage({
@@ -767,7 +799,7 @@ function handleClear() {
     <div class="main" v-show="!overShowValid">
         <div class="inner"></div>
         <div class="top">
-            <button class="outButton" @click="reciteOver"><el-icon>
+            <button class="outButton" @click="backToMain"><el-icon>
                     <ArrowLeft />
                 </el-icon></button>
             <div class="reciteNum">
@@ -968,20 +1000,27 @@ function handleClear() {
 
 
     </div>
-    <div class="main" v-show="overShowValid">
-        <span>本组单词复习完成</span>
-        <span>还有{{ less }}个单词需要复习</span>
-        <div>
-            <div>
-                <span>单词</span>
-                <span>下次复习</span>
-            </div>
-            <div>
-                <ul>
-                    <li v-for="word in wordNextTime"><span>{{ word.spell }}</span><span
-                            v-if="word.overFlag">flag</span><span :class="{ 'green': word.overFlag }">{{ word.nextTime
-                            }}</span></li>
-                </ul>
+    <div class="main" style="background: #fffdf9;" v-show="overShowValid">
+        <img src="../../../public/OIP-C.jpg" class="overSmile">
+        <div class="flexBox">
+            <h2>本组单词复习完成</h2>
+            <span class="fontGrey" style="margin: 6px 0 26px;">还有<span style="color: #ff6f00; margin: 0 4px;">{{ less }}</span>个单词需要复习</span>
+            <div class="overDetailBox">
+                <div class="overDetailTitle fontGrey">
+                    <span style="position: absolute;left: 300px;">单词</span>
+                    <span style="position: absolute; right: 261px;">下次复习</span>
+                </div>
+                <div class="overDetailContent">
+                    <ul>
+                        <li v-for="word in wordNextTime" style="display: block; height: 16px;margin: 6px auto;">
+                            <span class="overWord">{{ word.spell }}</span>
+                            <span v-if="word.overFlag" style="position: absolute;">flag</span>
+                            <span class="overTime" :class="{ 'green': word.overFlag }">{{ word.nextTime }}</span>
+                        </li>
+                    </ul>
+                </div>
+                    <button class="overButton" @click="router.push('/main')">休息一下</button>
+                    <button v-show="less>0">继续复习</button>
             </div>
         </div>
     </div>
