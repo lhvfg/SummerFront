@@ -1,9 +1,12 @@
 <script setup>
 import { ref, reactive, onMounted } from 'vue'
+import { useUserStore } from "../../stores/User"
 import { useRouter } from "vue-router";
 import axios from "axios";
 
 const router = useRouter();
+let store = useUserStore();
+
 const bookName = ref('')
 const validName = ref(false);
 const validNameText = ref('');
@@ -110,7 +113,8 @@ function chooseBook() {
                         message: "选择成功！",
                         duration: 2000,
                     });
-                    localStorage.setItem("chooseBookId", books.value.find(item => item.bookName == bookName.value).id)
+                    localStorage.setItem("chooseBookId", books.value.find(item => item.bookName == bookName.value).id);
+                    store.$status.bookName = bookName.value;
                     // clearAll();
                 }
                 else {

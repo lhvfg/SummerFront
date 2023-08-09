@@ -56,6 +56,18 @@ const router = createRouter({
                 import ("../views/Recite/review.vue"),
         },
         {
+            path: "/mycontent",
+            name: "mycontent",
+            component: () =>
+                import ("../views/mycontent/mycontent.vue"),
+        },
+        {
+            path: "/dashboard",
+            name: "dashboard",
+            component: () =>
+                import ("../views/dashboard/dashboard.vue"),
+        },
+        {
             path: "/",
             redirect: {
                 name: "login",

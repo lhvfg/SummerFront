@@ -135,7 +135,7 @@ function handleLogin() {
         let request = {
             userName: _username,
             password: password.value,
-            lastLoginTime: yy + '-' + mm + '-' + dd
+            lastLoginTime:  yy + '-' + (mm < 10 ? '0' + mm : mm) + '-' + (dd < 10 ? '0' + dd : dd)
         };
         Request.post("/login", request).then(
             (res) => {

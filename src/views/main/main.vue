@@ -148,7 +148,7 @@ function logout() {
             <button class="avatarBox" @click="drawer = true">
                 <el-avatar class="avatar" src="../../public/default.jpg"></el-avatar>
             </button>
-            <el-drawer v-model="drawer" title="I am the title" :with-header="false" direction="ltr" class="drawerBox">
+            <el-drawer v-model="drawer" title="I am the title" :with-header="false" direction="ltr" size="260px" open-delay="0.4s">
                 <button class="drawerButton"><el-icon class="drawerImg"><User /></el-icon><span class="drawerWord">个人设置</span><el-icon class="right"><ArrowRight /></el-icon></button>
                 <button class="drawerButton" @click="logout()"><el-icon class="drawerImg"><House /></el-icon><span class="drawerWord">退出登录</span><el-icon class="right"><ArrowRight /></el-icon></button>
             </el-drawer>
@@ -175,16 +175,16 @@ function logout() {
                 </div>
             </el-button>
         </div>
-        <div class="button">
-            <el-button text @click="manageContent">
-                manageContent
-            </el-button>
-            <el-button text @click="myContent">
-                myContent
-            </el-button>
-            <el-button text @click="dashboard">
-                dashboard
-            </el-button>
+        <div class="buttonBox">
+            <button text @click="manageContent">
+                <el-icon><DocumentAdd /></el-icon>
+            </button>
+            <button text @click="router.push('/mycontent');">
+                <el-icon><Files /></el-icon>
+            </button>
+            <button text @click="router.push('/dashboard');">
+                <el-icon><Histogram /></el-icon>
+            </button>
         </div>
 
     </div>

@@ -13,7 +13,8 @@ export const useUserStore = defineStore(
             teamId: null,
             chooseBookId: null,
             nowDay: null,
-            reviewNum: 0
+            reviewNum: 0,
+            bookName: null
         }),
         actions: {
             setUserId(id) {
