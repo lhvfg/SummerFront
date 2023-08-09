@@ -1,0 +1,128 @@
+* {
+    padding: 0;
+    margin: 0;
+    font-family: Arial, Helvetica, sans-serif;
+}
+
+.allbox {
+    height: 56.26vw;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    margin: 0;
+    padding: 0;
+    background: url(/alarm.jpg);
+    background-repeat: no-repeat;
+    background-attachment: fixed;
+    background-size: cover;
+    -moz-background-size: cover;
+    -webkit-background-size: cover;
+}
+
+.avatarBox {
+    position: relative;
+    left: -557px;
+    top: 25px;
+    height: 75px;
+    width: 78px;
+    border: none;
+    background: transparent;
+    cursor: pointer;
+}
+
+.avatar {
+    position: relative;
+    left: 0;
+    top: 0px;
+    --el-avatar-size: 74px;
+}
+
+.drawerBox {
+    width: 17%;
+}
+
+.drawerButton {
+    background: transparent;
+    border: none;
+    display: block;
+    position: relative;
+    height: 30px;
+    width: 170px;
+    cursor: pointer;
+}
+
+.drawerImg,
+.drawerWord,
+.right {
+    position: absolute;
+    top: 10px;
+}
+
+.drawerImg {
+    left: 0;
+    scale: 1.2;
+}
+
+.drawerWord {
+    left: 30px;
+}
+
+.right {
+    right: 49px;
+    top: 13px;
+}
+
+.daka {
+    background: rgba(255, 255, 255, 0.65);
+    /* box-shadow: 0 1px 11px 0 rgba(31, 38, 135, 0.37); */
+    backdrop-filter: blur(19px);
+    -webkit-backdrop-filter: blur(19px);
+    border-radius: 34px;
+    border: 1px solid rgba(255, 255, 255, 0.18);
+    width: 162px;
+    height: 156px;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+}
+
+.glass {
+    background: rgba(255, 255, 255, 0.65);
+    /* box-shadow: 0 1px 11px 0 rgba(31, 38, 135, 0.37); */
+    backdrop-filter: blur(19px);
+    -webkit-backdrop-filter: blur(19px);
+    border-radius: 34px;
+}
+
+.mid {
+    margin: 243px 0px 37px;
+}
+
+.red {
+    color: rgb(255, 98, 0);
+    position: relative;
+    font-size: 17px;
+    left: -45.7px;
+}
+
+.studyButton {
+    width: 162px;
+    height: 72px;
+    font-size: 27px;
+    border-radius: 7px;
+    /* display: flex; */
+    /* flex-direction: column; */
+    margin: 0 150px;
+}
+
+.word {
+    display: block;
+    position: relative;
+    left: -26px;
+    font-size: 23px;
+    /* font-family: unset; */
+    top: 5px;
+    color: black;
+    font-weight: 500;
+}

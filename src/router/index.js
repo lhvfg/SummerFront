@@ -17,7 +17,7 @@ const router = createRouter({
             path: "/main",
             name: "Main",
             component: () =>
-                import ("../views/main.vue"),
+                import ("../views/main/main.vue"),
         },
         {
             path: "/contentManager",
