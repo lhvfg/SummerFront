@@ -1,0 +1,38 @@
+* {
+    padding: 0;
+    margin: 0;
+    font-family: Arial, Helvetica, sans-serif;
+    background: transparent;
+    border: none;
+}
+
+.main {
+    height: 66vw;
+    width: 100%;
+    position: fixed;
+    z-index: -2;
+    background-color: rgb(245 245 245);
+}
+
+.top {
+    width: 100%;
+    height: 20px;
+}
+
+.outButton {
+    cursor: pointer;
+    position: absolute;
+    left: 29px;
+    top: 15.2px;
+    scale: 1.4;
+}
+
+.nowLearnBox,
+.myDataBox,
+.top {
+    position: relative;
+}
+
+.nowLearnBox {
+    margin-top: 20px;
+}

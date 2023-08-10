@@ -4,6 +4,7 @@ import { useRouter } from "vue-router";
 import axios from "axios";
 import { useUserStore } from "../../stores/User"
 import { storeToRefs } from 'pinia';
+import Dashboard from '../dashboard/dashboard.vue';
 
 const store = useUserStore();
 const router = useRouter();
@@ -141,6 +142,30 @@ function logout() {
         }
     )
 }
+function mycontent(){
+    if(bookId == null)
+    {
+        ElMessage({
+            type: "error",
+            message: "清先选择要背的单词书！",
+            duration: 2000,
+        });
+    }
+    else
+    router.push('/mycontent');
+}
+function dashboard(){
+    if(bookId == null)
+    {
+        ElMessage({
+            type: "error",
+            message: "清先选择要背的单词书！",
+            duration: 2000,
+        });
+    }
+    else
+    router.push('/dashboard');
+}
 </script>
 <template>
     <div class="allbox">
@@ -179,10 +204,10 @@ function logout() {
             <button text @click="manageContent">
                 <el-icon><DocumentAdd /></el-icon>
             </button>
-            <button text @click="router.push('/mycontent');">
+            <button text @click="mycontent">
                 <el-icon><Files /></el-icon>
             </button>
-            <button text @click="router.push('/dashboard');">
+            <button text @click="dashboard">
                 <el-icon><Histogram /></el-icon>
             </button>
         </div>
