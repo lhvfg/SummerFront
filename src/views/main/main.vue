@@ -6,10 +6,6 @@ import { useUserStore } from "../../stores/User"
 import { storeToRefs } from 'pinia';
 import Dashboard from '../dashboard/dashboard.vue';
 
-const store = useUserStore();
-const router = useRouter();
-const learnNum = ref(0);
-const reviewNum = ref(0);
 const Request = axios.create({
     baseURL: '/api',
     timeout: 3000,
@@ -17,6 +13,16 @@ const Request = axios.create({
 });
 const bookId = ref(localStorage.getItem("chooseBookId"));
 const userId = ref(localStorage.getItem("userId"));
+const store = useUserStore();
+const router = useRouter();
+
+let today;
+const learnNum = ref(0);
+const reviewNum = ref(0);
+const successive = ref(0);
+const drawer = ref(false);
+const clockinValid = ref(false);
+const clocking = ref(false);
 
 var month = ref(new Date().getMonth() + 1);
 month.value = (month.value < 10 ? '0' : '') + month.value;
@@ -24,8 +30,6 @@ var day = ref(new Date().getDate());
 day.value = (day.value < 10 ? '0' : '') + day.value + '  ';
 const weeks = ref(["Sun.", "Mon.", "Tues.", "Wed.", "Thur.", "Fri.", "Sat."]);
 const nowDay = computed(() => weeks.value[new Date().getDay()]);
-const successive = ref(1);
-const drawer = ref(false);
 
 onMounted(() => {
     let request1 = {
@@ -39,6 +43,11 @@ onMounted(() => {
         bookId: bookId.value,
         userId: userId.value
     };
+    let yy = new Date().getFullYear();
+    let mm = new Date().getMonth() + 1;
+    let dd = new Date().getDate();
+    today = yy + '-' + (mm < 10 ? '0' + mm : mm) + '-' + (dd < 10 ? '0' + dd : dd);
+
     Request.post("/review", request1).then(
         (res) => {
             console.log(res);
@@ -62,7 +71,7 @@ onMounted(() => {
                     duration: 2000,
                 });
             }
-        })
+        });
     Request.post("/recite", request2).then(
         (res) => {
             console.log(res);
@@ -84,7 +93,10 @@ onMounted(() => {
                     duration: 2000,
                 });
             }
-        })
+        });
+    if (today != localStorage.getItem("lastClockinTime")) {
+        clockinValid.value = true;
+    }
 })
 function Learn() {
     if (learnNum.value > 0) {
@@ -121,10 +133,10 @@ function Review() {
 }
 function logout() {
     Request.get('/clearSession').then(
-        (res)=>{
+        (res) => {
             console.log(res);
-            if(res.data.status == 'clear')
-            {
+            if (res.data.status == 'clear') {
+                localStorage.clear();
                 ElMessage({
                     type: "success",
                     message: "已清除登录数据",
@@ -132,7 +144,7 @@ function logout() {
                 });
                 router.push('/login');
             }
-            else{
+            else {
                 ElMessage({
                     type: "error",
                     message: "出错了",
@@ -142,9 +154,8 @@ function logout() {
         }
     )
 }
-function mycontent(){
-    if(bookId == null)
-    {
+function mycontent() {
+    if (bookId == null) {
         ElMessage({
             type: "error",
             message: "清先选择要背的单词书！",
@@ -152,11 +163,10 @@ function mycontent(){
         });
     }
     else
-    router.push('/mycontent');
+        router.push('/mycontent');
 }
-function dashboard(){
-    if(bookId == null)
-    {
+function dashboard() {
+    if (bookId == null) {
         ElMessage({
             type: "error",
             message: "清先选择要背的单词书！",
@@ -164,7 +174,44 @@ function dashboard(){
         });
     }
     else
-    router.push('/dashboard');
+        router.push('/dashboard');
+}
+function handleClockin() {
+    if (clockinValid.value) {
+        let request3 = {
+            id: userId.value,
+            lastClockinTime: today
+        };
+        Request.post("/clockin", request3).then(
+            (res) => {
+                console.log(res);
+                if (res.data.status == 'clockInSuccess') {
+                    successive.value = res.data.accumulateDay;
+                    clocking.value = true;
+                    localStorage.setItem("lastClockinTime",today)
+                    localStorage.setItem("accumulateDay",successive.value)
+                    setTimeout(()=>{
+                        clocking.value = false;
+                        clockinValid.value = false;
+                    },3000)
+                }
+                else if (res.data.status == 'block') {
+                    router.push('/login');
+                    ElMessage({
+                        type: "error",
+                        message: "登陆过期或未登录！",
+                        duration: 2000,
+                    });
+                }
+                else {
+                    ElMessage({
+                        type: "error",
+                        message: "出错了",
+                        duration: 2000,
+                    });
+                }
+            });
+    }
 }
 </script>
 <template>
@@ -173,18 +220,32 @@ function dashboard(){
             <button class="avatarBox" @click="drawer = true">
                 <el-avatar class="avatar" src="../../public/default.jpg"></el-avatar>
             </button>
-            <el-drawer v-model="drawer" title="I am the title" :with-header="false" direction="ltr" size="260px" open-delay="0.4s">
-                <button class="drawerButton"><el-icon class="drawerImg"><User /></el-icon><span class="drawerWord">个人设置</span><el-icon class="right"><ArrowRight /></el-icon></button>
-                <button class="drawerButton" @click="logout()"><el-icon class="drawerImg"><House /></el-icon><span class="drawerWord">退出登录</span><el-icon class="right"><ArrowRight /></el-icon></button>
+            <el-drawer v-model="drawer" title="I am the title" :with-header="false" direction="ltr" size="260px"
+                open-delay="0.4s">
+                <button class="drawerButton"><el-icon class="drawerImg">
+                        <User />
+                    </el-icon><span class="drawerWord">个人设置</span><el-icon class="right">
+                        <ArrowRight />
+                    </el-icon></button>
+                <button class="drawerButton" @click="logout()"><el-icon class="drawerImg">
+                        <House />
+                    </el-icon><span class="drawerWord">退出登录</span><el-icon class="right">
+                        <ArrowRight />
+                    </el-icon></button>
             </el-drawer>
         </div>
-        <button class="daka">
-            <el-icon>
+        <button :class="{ 'daka': clockinValid, 'dakaOver': !clockinValid }" @click="handleClockin()">
+            <el-icon v-show="clockinValid && !clocking">
                 <Calendar style="height: 26px;width: 22px;transform: scale(1.8);margin-bottom: -40px;" />
             </el-icon>
-            <span style="margin-top: 48px;">签到</span>
-            <span v-if="true" style="margin-top: 7px;margin-bottom: 12px;">{{ month }}/{{ day }}{{ nowDay }}</span>
-            <span v-if="false" style="margin-top: 7px;margin-bottom: 12px;">已连续登录{{ successive }}天</span>
+            <span v-show="clockinValid && !clocking" style="margin-top: 48px;">签到</span>
+            <span v-show="clockinValid && !clocking" style="margin-top: 7px;margin-bottom: 12px;">{{ month }}/{{ day }}{{
+                nowDay }}</span>
+            <span v-show="clocking" style="scale: 2.2;margin-bottom: 17px;"><el-icon>
+                    <Check />
+                </el-icon></span>
+            <span v-show="clocking" style="margin-top: 7px;margin-bottom: 12px;font-size: 15px;">已累计登录<span style="margin: 2px;color: #f56c6c;">{{ successive }}</span>天</span>
+            <span v-show="!clockinValid" style="font-size: 38px;font-weight: bolder;">Clock</span>
         </button>
         <div class="mid">
             <el-button text @click="Learn" class="glass studyButton">
@@ -202,18 +263,22 @@ function dashboard(){
         </div>
         <div class="buttonBox">
             <button text @click="manageContent">
-                <el-icon><DocumentAdd /></el-icon>
+                <el-icon>
+                    <DocumentAdd />
+                </el-icon>
             </button>
             <button text @click="mycontent">
-                <el-icon><Files /></el-icon>
+                <el-icon>
+                    <Files />
+                </el-icon>
             </button>
             <button text @click="dashboard">
-                <el-icon><Histogram /></el-icon>
+                <el-icon>
+                    <Histogram />
+                </el-icon>
             </button>
         </div>
 
     </div>
 </template>
-<style scoped>
-@import './main.css';
-</style>
+<style scoped>@import './main.css';</style>

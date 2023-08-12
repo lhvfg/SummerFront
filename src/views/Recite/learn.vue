@@ -57,6 +57,8 @@ let reciteWord = ref(
 let wordData = ref([[]]);
 //各wordData[count]没有数据的标识
 let countOver = [false, false, false];
+//是否没有访问过count 1/2
+let neverVisit = [false, true, true]
 //背诵总数
 let maxNum = ref(10);
 //count0/1/2各数组长度
@@ -145,16 +147,23 @@ onMounted(() => {
             console.log(res);
             console.log(111);
             if (res.data.status == "reciteWords") {
-                //count = 0
+                //count = 0,理论上会有小于10个的情况，但是目前不太遇得到，所以可以默认count = 0的数组长度一定是大于等于10的
                 wordData.value[0] = reciteWord.value[0] = res.data.reciteNewWordDates;
                 //count = 1
                 reciteWord.value[1] = res.data.reciteOneWordDates;
                 if (reciteWord.value[1].length > 0)
                     wordData.value[1] = reciteWord.value[1].splice(0, reciteWord.value[1].length > 3 ? 2 : reciteWord.value[1].length - 1);
+                else {
+                    //新用户
+                    wordData.value[1] = new Array();
+                }
                 //count = 2
                 reciteWord.value[2] = res.data.reciteTwoWordDates;
                 if (reciteWord.value[2].length > 0)
                     wordData.value[2] = reciteWord.value[2].splice(0, reciteWord.value[2].length > 4 ? 3 : reciteWord.value[2].length - 1);
+                else {
+                    wordData.value[2] = new Array();
+                }
                 //console.log(reciteWord.value[0]);
                 //console.log(reciteWord.value[1]);
                 //console.log(reciteWord.value[2]);
@@ -168,6 +177,14 @@ onMounted(() => {
                 handleData();
                 handleShow();
             }
+            else if (res.data.status == 'block') {
+                router.push('/login');
+                ElMessage({
+                    type: "error",
+                    message: "登陆过期或未登录！",
+                    duration: 2000,
+                });
+            }
             else {
                 ElMessage({
                     type: "error",
@@ -179,7 +196,6 @@ onMounted(() => {
 })
 //初始化
 function handleData(num) {
-    console.log(222);
     //初次进入寻找数据
     if (num == null) {
         while (wordData.value[nowCount].length == 0 && nowCount < 3) {
@@ -189,19 +205,21 @@ function handleData(num) {
     }
     //处理数据
     if (wordData.value[nowCount].length > 0) {
-        nowCount = wordData.value[nowCount][0].count;
+        console.log("现在处理的是count" + nowCount + "数组首个单词的数据,这个数组：" + wordData.value[nowCount]);
         nowSpell = wordData.value[nowCount][0].spell;
         wordId = wordData.value[nowCount][0].wordId;
         starValid.value = wordData.value[nowCount][0].star;
         nowMeaning = wordData.value[nowCount][0].meaning;
+        //console.log(nowMeaning);
         //console.log(reciteWord.value[nowCount][0].derived[0].spell);
         //console.log(reciteWord.value[nowCount][0].derived[0].meanings);
         handleDerive(wordData.value[nowCount][0].derived);
+        //console.log("在处理绿球前count为"+nowCount);
         //处理显示绿球的数量
         handlePoint(nowCount);
         handleSentence(wordData.value[nowCount][0].sentence);
         synonymous.value = wordData.value[nowCount][0].synonymous;
-        console.log(synonymous.value);
+        //console.log(synonymous.value);
         notes.value = wordData.value[nowCount][0].notes
 
     }
@@ -213,6 +231,7 @@ function handleData(num) {
 function handlePoint(count) {
     for (var i = 0; i < 3; i++) { countFlag.value[i] = false }
     for (var i = 0; i < count; i++) { countFlag.value[i] = true }
+    console.log("有" + count + "个绿球将显示");
 }
 //处理模块显示
 function handleShow() {
@@ -267,10 +286,10 @@ function handleDerive(derives) {
     //衍生词
     //console.log(derives);
     for (var index = 0; index < derives.length; index++) {
-        console.log("第" + index + "次循环" + derives[index].spell);
+        //console.log("第" + index + "次循环" + derives[index].spell);
         deriveWords.value.push({ spell: derives[index].spell, meaning: derives[index].meanings });
     }
-    console.log(deriveWords.value);
+    console.log(nowSpell + "单词的派生词数据：" + deriveWords.value);
 
     //释义选项
     if (nowCount == 0) {
@@ -283,7 +302,7 @@ function handleDerive(derives) {
             if (c == ans) {
                 c++;
             };
-            console.log(deriveWords.value[j].spell);
+            //console.log(deriveWords.value[j].spell);
             deriveOption.value[c] = { spell: deriveWords.value[j].spell, meaning: deriveWords.value[j].meaning[0] };
             c++; j++
         }
@@ -451,9 +470,6 @@ function handleArray(flag, nowCount) {
                 //取出首个，加到另一个数组末尾
                 let temp = wordData.value[0].shift();
                 wordData.value[1].push(temp);
-                if (wordData.value[0].length == 0) {
-                    countOver[0] = true;
-                }
                 console.log("数组处理0");
                 break;
             }
@@ -461,18 +477,12 @@ function handleArray(flag, nowCount) {
                 //取出首个，加到另一个数组末尾
                 let temp = wordData.value[1].shift();
                 wordData.value[2].push(temp);
-                if (wordData.value[1].length == 0) {
-                    countOver[1] = true;
-                }
                 console.log("数组处理1");
                 break;
             }
             case 2: {
                 //取出首个
                 wordData.value[2].shift();
-                if (wordData.value[2].length == 0) {
-                    countOver[2] = true;
-                }
                 console.log("数组处理2");
                 break;
             }
@@ -484,6 +494,13 @@ function handleArray(flag, nowCount) {
         let temp = wordData.value[nowCount].shift();
         wordData.value[0].push(temp);
     }
+    //处理一下每个数组有无数据的判定
+    for (var i = 0; i < 3; i++) {
+            countOver[i] = false;
+            if (wordData.value[i].length == 0) {
+                countOver[i] = true;
+            }
+        }
     console.log("现在数组里：");
     for (var i = 0; i < 3; i++) {
         console.log(wordData.value[i]);
@@ -495,8 +512,26 @@ function handleNowCount(f, count) {
     //答对了
     if (f && (!countOver[0] || !countOver[1] || !countOver[2])) {
         count >= 2 ? count = 0 : count++;
+        //初次访问，要数量大于等于三才可以
+        if (neverVisit[count]) {
+            console.log("进入初次访问的判断");
+            if (wordData.value[count].length < 3) {
+                console.log(count + "数组长度不够三，count置零");
+                count = 0;
+            }
+            else {
+                //此次就将访问该count数组
+                neverVisit[count] = false;
+            }
+        }
+        //该count背完判定
         while (countOver[count]) {
+            console.log("进入数组背完判定");
             count == 2 ? count = 0 : count++;
+            //此处为前一个数组已经背完了，没办法，在不够3个的情况下也要背了
+            if (neverVisit[count]) {
+                neverVisit[count] = false;
+            }
         }
         nowCount = count;
         console.log("判定后nowCount为" + nowCount);
@@ -694,6 +729,7 @@ function undoDeleteWord() {
             }
         })
 }
+//笔记的添加
 function handleNote() {
     dialogFormVisible.value = false;
     let request = {
@@ -749,6 +785,7 @@ function handleClear() {
     ]
     countFlag = ref([false]);
     promptUsed = false;
+    deleteValid.value = false;
 }
 </script>
 <template>
@@ -804,17 +841,21 @@ function handleClear() {
                 <div v-show="meaningValid" class="mean">
                     <ul style="display: flex;justify-content: center;flex-direction: column;">
                         <li class="meanContent" v-for="mean in nowMeaning">
-                            <div style="display: inline;" :class="{ 'meanBox': (nowCount == 1 || nowCount == 2) && flag == null }">
+                            <div style="display: inline;"
+                                :class="{ 'meanBox': (nowCount == 1 || nowCount == 2) && flag == null }">
                                 <span class="meanFunction"
-                                    :class="{ 'transprent': (nowCount == 1 || nowCount == 2) && flag == null }">{{ mean.function
+                                    :class="{ 'transprent': (nowCount == 1 || nowCount == 2) && flag == null }">{{
+                                        mean.function
                                     }}</span><span class="meanWord"
-                                    :class="{ 'transprent': (nowCount == 1 || nowCount == 2) && flag == null }">{{ mean.content
+                                    :class="{ 'transprent': (nowCount == 1 || nowCount == 2) && flag == null }">{{
+                                        mean.content
                                     }}</span>
                             </div>
                         </li>
                     </ul>
                 </div>
-                <ul v-show="sentenceValid" class="optionGrey sentenceBox" :class="{ 'middle': nowCount == 1 && flag == null }">
+                <ul v-show="sentenceValid" class="optionGrey sentenceBox"
+                    :class="{ 'middle': nowCount == 1 && flag == null }">
                     <div>
                         <li style="width: 372px;white-space: normal;">{{ sentences[0].content }}</li>
                         <li v-show="sentenceChineseValid" style="margin-top: 3px;font-size: 14px;">{{
@@ -912,7 +953,7 @@ function handleClear() {
                             <li style="display: inline-block;">
                                 <button class="deriveButton" :class="{ 'buttonWhite': chooseDetail[0] }"
                                     @click="buttonChoose(0)">
-                                    派生
+                                    形近
                                 </button>
                             </li>
                             <li style="display: inline-block;" v-show="synonymous.length > 0">
@@ -970,4 +1011,6 @@ function handleClear() {
 
     </div>
 </template>
-<style scoped>@import './recite.css';</style>
+<style scoped>
+@import './recite.css';
+</style>

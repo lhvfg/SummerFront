@@ -125,7 +125,7 @@ let deleteValid = ref(false);
 //显示选项答案的判定
 let ansValid = ref(false)
 //当前背对了没有
-let flag = null;
+let flag = ref(null);
 //当前选中的细节按钮
 let chooseDetail = ref([true, false, false])
 //当前单词的stage
@@ -164,6 +164,14 @@ onMounted(() => {
                 handleData();
                 handleShow();
             }
+            else if (res.data.status == 'block') {
+                router.push('/login');
+                ElMessage({
+                    type: "error",
+                    message: "登陆过期或未登录！",
+                    duration: 2000,
+                });
+            }
             else {
                 ElMessage({
                     type: "error",
@@ -175,8 +183,8 @@ onMounted(() => {
 })
 //获取日期字符串
 function handleNextTime() {
-    console.log(flag);
-    if (flag) {
+    console.log(flag.value);
+    if (flag.value) {
         switch (nowStage) {
             case 0: AddDayCount = 2; break;
             case 1: AddDayCount = 3; break;
@@ -185,7 +193,7 @@ function handleNextTime() {
             case 4: AddDayCount = 16; break;
         }
     }
-    else if (!flag) {
+    else if (!flag.value) {
         AddDayCount = 2;
     }
     console.log(AddDayCount);
@@ -209,6 +217,7 @@ function handleData(num) {
     }
     //处理数据
     if (reciteWord.value.length > 0) {
+        //这里的count不是数据库里存的count,而是后端传数据过来时主动设置的默认-1
         nowCount = reciteWord.value[0].count;
         nowSpell = reciteWord.value[0].spell;
         wordId = reciteWord.value[0].wordId;
@@ -316,11 +325,11 @@ function handleChick(index) {
         ansValid.value = true;
         if (index != ans) {
             optionValid.value[index] = true;
-            flag = false;
+            flag.value = false;
             handleWrong();
         }
         else {
-            flag = true;
+            flag.value = true;
             handleRight(nowCount);
         }
     }
@@ -333,7 +342,7 @@ function handleChick(index) {
 //答错总处理
 function handleWrong(num) {
     console.log("答错了" + "此时的count为" + nowCount + "此时的stage为" + nowStage);
-    flag = false;
+    flag.value = false;
     var stage2;
     if (num != null) {
         stage2 = 1;
@@ -368,7 +377,7 @@ function handleWrong(num) {
 //答对总处理
 function handleRight(i) {
     console.log("答对了" + "此时的count为" + nowCount + "此时的stage为" + nowStage);
-    flag = true;
+    flag.value = true;
     console.log(handleNextTime());
     let request;
     //判断是否要向后端发送请求
@@ -446,9 +455,10 @@ function handleVague() {
 //答对后记错总处理
 function handleReciteWrong() {
     //先变更答题判定
-    flag = false;
+    console.log("记错了");
+    flag.value = false;
     //如果是首次作答
-    if (nowStage == -1) {
+    if (nowCount == -1) {
         //stage和时间在后端已经发送请求修改了,要再发一次重置数据
         let request = {
             requestType: "setNextTime",
@@ -475,6 +485,14 @@ function handleReciteWrong() {
                     });
                 }
             })
+    }
+    else if(nowCount == 2){
+        //背诵数据减一
+        recitedWordNum.value--;
+        //判断要不要修改背完判定
+        if (!nextOneValid.value) {
+            nextOneValid.value = true;
+        }
     }
 
 }
@@ -544,11 +562,11 @@ function buttonChoose(i) {
 //答题后判断下一个背什么单词,能进入这个方法说明还有单词没背完
 function handleNextWord() {
     //如果这个单词标熟了,但之前背错了,要把flag修改成true
-    if (deleteValid.value && !flag) {
-        flag = true;
+    if (deleteValid.value && !flag.value) {
+        flag.value = true;
     }
     //只有明确了现在有没有背错才可以进行数组的修改
-    handleArray(flag);
+    handleArray(flag.value);
     handleClear();
     handleData(1);
     question.value = true;
@@ -724,6 +742,7 @@ function undoDeleteWord() {
             }
         })
 }
+//处理笔记
 function handleNote() {
     dialogFormVisible.value = false;
     let request = {
@@ -756,7 +775,7 @@ function handleNote() {
 }
 //一些变量的重置
 function handleClear() {
-    flag = null;
+    flag.value = null;
     optionValid = ref([false]);
     ansValid = ref(false)
     chooseDetail = ref([true, false, false])

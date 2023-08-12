@@ -150,6 +150,8 @@ function handleLogin() {
                     localStorage.setItem("teamId", res.data.teamId);
                     localStorage.setItem("userId", res.data.userId);
                     localStorage.setItem("chooseBookId", res.data.bookId);
+                    localStorage.setItem("lastClockinTime", res.data.lastClockinTime);
+                    localStorage.setItem("accumulateDay", res.data.accumulateDay);
 
                     store.$patch({
                         userId: res.data.userId,
@@ -177,7 +179,7 @@ function handleLogin() {
                     }
                     else {
                         setTimeout(() => {
-                            router.push("/contentManager");
+                            router.push("/dashboard");
                         }, 100);
                         ElMessage({
                         type: "success",

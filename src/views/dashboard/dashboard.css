@@ -2,14 +2,12 @@
     padding: 0;
     margin: 0;
     font-family: Arial, Helvetica, sans-serif;
-    background: transparent;
-    border: none;
+    /* background: transparent;
+    border: none; */
 }
 
 .main {
-    height: 66vw;
     width: 100%;
-    position: fixed;
     z-index: -2;
     background-color: rgb(245 245 245);
 }
@@ -19,12 +17,33 @@
     height: 20px;
 }
 
-.outButton {
+.buttonCommon {
     cursor: pointer;
+    background: transparent;
+    border: none;
+}
+
+.outButton {
     position: absolute;
     left: 29px;
     top: 15.2px;
     scale: 1.4;
+}
+
+.organ {
+    display: inline-block;
+    margin-left: 351px;
+    color: #f56c6c;
+    height: 26px;
+    width: 75px;
+    background-color: #fccfb8a3;
+    font-size: 1px;
+    border-radius: 13px;
+}
+
+.title {
+    width: 40%;
+    margin: 26px auto 10px;
 }
 
 .nowLearnBox,
@@ -36,3 +55,103 @@
 .nowLearnBox {
     margin-top: 20px;
 }
+
+
+/* .myDataBox {} */
+
+.whiteBox {
+    position: relative;
+    background: white;
+    margin: 10px auto;
+    width: 40%;
+    border-radius: 8px;
+    padding-top: 3px;
+}
+
+.book,
+.starBook,
+.progressBox {
+    position: absolute;
+}
+
+.book {
+    height: 100px;
+    width: 70px;
+    border: 1px solid black;
+    border-radius: 5px;
+    line-height: 70px;
+    text-align: center;
+    margin: 18px 15px;
+}
+
+.starBook {
+    bottom: 65px;
+    left: 15px;
+}
+
+.progressBox {
+    bottom: 20px;
+    left: 15px;
+}
+
+.fontGrey {
+    color: rgb(114, 113, 113);
+}
+
+.midWord {
+    font-size: 15px;
+}
+
+.bigWord {
+    font-size: large;
+    font-weight: normal;
+}
+
+.smallWord {
+    font-size: small;
+}
+
+.demo-progress .el-progress--line {
+    margin-bottom: 3px;
+    width: 350px;
+}
+
+.dataBox1,
+.dataBox2,
+.dataBox3,
+.dataBox4 {
+    margin: 15px;
+}
+
+.wrong,
+.right {
+    width: 400px;
+    margin: 1px;
+}
+
+.wrong {
+    color: hotpink;
+}
+
+.right {
+    color: #00c700;
+}
+
+.el-button--text {
+    margin-right: 15px;
+}
+
+.el-select {
+    width: 300px;
+}
+
+.el-input {
+    width: 300px;
+}
+
+.dialog-footer button:first-child {
+    margin-right: 10px;
+}
+
+
+/* .dataBox1 {} */

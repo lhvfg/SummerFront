@@ -1,6 +1,6 @@
 <script setup>
 import { ref, reactive, onMounted } from 'vue'
-import { useUserStore } from "../../stores/User"
+import { useUserStore } from "../stores/User"
 import { useRouter } from "vue-router";
 import axios from "axios";
 
@@ -71,16 +71,7 @@ function checkName() {
         }
     }, 1000)
 }
-function addWord() {
-    setTimeout(() => {
-        router.push("/addWord");
-    }, 500)
-}
-function addBook() {
-    setTimeout(() => {
-        router.push("/addBook");
-    }, 500)
-}
+
 function changeBookName(newName) {
     bookName.value = newName;
     validName.value = true;
@@ -139,6 +130,16 @@ function back() {
 }
 function upLoadWord() {
     router.push('/uploadWord')
+}
+function addWord() {
+    setTimeout(() => {
+        router.push("/addWord");
+    }, 500)
+}
+function addBook() {
+    setTimeout(() => {
+        router.push("/addBook");
+    }, 500)
 }
 </script>
 <template>
