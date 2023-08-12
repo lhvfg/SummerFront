@@ -1,6 +1,6 @@
 <script setup>
 import { ref, reactive, onMounted } from 'vue'
-import { useUserStore } from "../stores/User"
+import { useUserStore } from "../../stores/User"
 import { useRouter } from "vue-router";
 import axios from "axios";
 
@@ -71,7 +71,6 @@ function checkName() {
         }
     }, 1000)
 }
-
 function changeBookName(newName) {
     bookName.value = newName;
     validName.value = true;
@@ -143,70 +142,65 @@ function addBook() {
 }
 </script>
 <template>
-    <button class="outButton" @click="back"><el-icon>
-            <ArrowLeft />
-        </el-icon></button>
-    <div>
-        <button @click="addWord">新增与修改单词</button>
-        <button @click="upLoadWord">上传单词</button>
-        <button @click="addBook">新增单词书</button>
+    <div class="main">
+        <div class="top">
+            <span class="viewName">内容管理</span>
+            <button class="buttonCommon outButton" @click="back">
+            <el-icon ><ArrowLeft /></el-icon>
+            </button>
+        </div>
+        <div class="whiteBox" style="margin-top: 70px;">
+            <div class="buttonBox" @click="addWord">
+                <el-icon class="icon iconYellow"><Document /></el-icon>
+                <button class="buttonCommon" >新增与修改单词</button>
+                <el-icon class="rightArrow"><ArrowRight /></el-icon>
+            </div>
+            <div class="buttonBox" @click="upLoadWord">
+                <el-icon class="icon iconYellow"><FolderAdd /></el-icon>
+                <button class="buttonCommon" >上传单词</button>
+                <el-icon class="rightArrow"><ArrowRight /></el-icon>
+            </div>
+        </div>
+        <div class="whiteBox">
+            <div class="buttonBox" @click="addBook">
+                <el-icon class="icon iconBlue"><Reading /></el-icon>
+                <button class="buttonCommon" >新增单词书</button>
+                <el-icon class="rightArrow"><ArrowRight /></el-icon>
+            </div>
+            <div class="buttonBox" @click="dialogFormVisible = true">
+                <el-icon class="icon iconBlue"><Pointer /></el-icon>
+                <button class="buttonCommon" >
+                    选择单词书
+                </button>
+                <el-icon class="rightArrow"><ArrowRight /></el-icon>
+            </div>
+        </div>
+        <!-- Form -->
+        <el-dialog v-model="dialogFormVisible" title="选择单词书">
+            <el-form :model="form">
+                <el-form-item label="搜索名称" :label-width="formLabelWidth">
+                    <el-input v-model="bookName" autocomplete="off" placeholder="用名称搜索" @keyup="checkName()" />
+                    <br>
+                    <span :class="{ 'wrong': !validName, 'right': validName }">{{ validNameText }}</span>
+                </el-form-item>
+                <el-form-item label="列表选择" :label-width="formLabelWidth">
+                    <el-select v-model="form.region" placeholder="请选择一本单词书">
+                        <el-option v-for="(book, index) in books" :label="book.bookName" :value="book.bookName"
+                            @click="changeBookName(book.bookName)" />
+                    </el-select>
+                </el-form-item>
+            </el-form>
+            <template #footer>
+                <span class="dialog-footer">
+                    <el-button @click="dialogFormVisible = false">Cancel</el-button>
+                    <el-button type="primary" @click="chooseBook">
+                        Confirm
+                    </el-button>
+                </span>
+            </template>
+        </el-dialog>
     </div>
-    <!-- Form -->
-    <el-button text @click="dialogFormVisible = true">
-        选择单词书
-    </el-button>
-    <el-dialog v-model="dialogFormVisible" title="选择单词书">
-        <el-form :model="form">
-            <el-form-item label="搜索名称" :label-width="formLabelWidth">
-                <el-input v-model="bookName" autocomplete="off" placeholder="用名称搜索" @keyup="checkName()" />
-                <br>
-                <span :class="{ 'wrong': !validName, 'right': validName }">{{ validNameText }}</span>
-            </el-form-item>
-            <el-form-item label="列表选择" :label-width="formLabelWidth">
-                <el-select v-model="form.region" placeholder="请选择一本单词书">
-                    <el-option v-for="(book, index) in books" :label="book.bookName" :value="book.bookName"
-                        @click="changeBookName(book.bookName)" />
-                </el-select>
-            </el-form-item>
-        </el-form>
-        <template #footer>
-            <span class="dialog-footer">
-                <el-button @click="dialogFormVisible = false">Cancel</el-button>
-                <el-button type="primary" @click="chooseBook">
-                    Confirm
-                </el-button>
-            </span>
-        </template>
-    </el-dialog>
 </template>
 <style scoped>
-.wrong,
-.right {
-    width: 400px;
-    margin-bottom: -13px;
-}
-
-.wrong {
-    color: hotpink;
-}
-
-.right {
-    color: #00c700;
-}
-
-.el-button--text {
-    margin-right: 15px;
-}
-
-.el-select {
-    width: 300px;
-}
-
-.el-input {
-    width: 300px;
-}
-
-.dialog-footer button:first-child {
-    margin-right: 10px;
-}
+@import './contentManager.css';
 </style>

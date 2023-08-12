@@ -168,9 +168,7 @@ function chooseBook() {
 function backToMain() {
     setTimeout(() => {
         router.push('/main');
-    }, 500)
-
-}
+    }, 500)}
 </script>
 <template>
     <div class="main">
@@ -178,7 +176,7 @@ function backToMain() {
             <button class="buttonCommon outButton" @click="backToMain()"><el-icon>
                     <ArrowLeft />
                 </el-icon></button>
-            <span style="position: absolute; top: 13.2px; left: 47%;">仪表盘</span>
+            <span class="viewName">仪表盘</span>
         </div>
         <div class="nowLearnBox">
             <div class="title">

@@ -23,7 +23,7 @@ const router = createRouter({
             path: "/contentManager",
             name: "contentManager",
             component: () =>
-                import ("../views/contentManager.vue"),
+                import ("../views/contentManager/contentManager.vue"),
         },
         {
             path: "/addword",

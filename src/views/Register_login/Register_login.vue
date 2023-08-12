@@ -179,7 +179,7 @@ function handleLogin() {
                     }
                     else {
                         setTimeout(() => {
-                            router.push("/dashboard");
+                            router.push("/contentManager");
                         }, 100);
                         ElMessage({
                         type: "success",
