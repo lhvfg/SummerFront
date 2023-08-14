@@ -174,6 +174,8 @@ onMounted(() => {
                 if (len[0] + len[1] + len[2] < 10) {
                     maxNum.value = len[0] + len[1] + len[2];
                 }
+                console.log(reciteWord.value[0]);
+                console.log(len[0]+' '+len[1]+' '+len[2]);
                 handleData();
                 handleShow();
             }
