@@ -135,7 +135,7 @@ function logout() {
     Request.get('/clearSession').then(
         (res) => {
             console.log(res);
-            if (res.data.status == 'clear') {
+            if (res.data.status == 'clear'||'new') {
                 localStorage.clear();
                 ElMessage({
                     type: "success",

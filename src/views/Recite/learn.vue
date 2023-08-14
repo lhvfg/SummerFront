@@ -7,7 +7,7 @@ import { useUserStore } from "../../stores/User"
 let router = useRouter();
 let Request = axios.create({
     baseURL: '/api',
-    timeout: 3000,
+    timeout: 30000,
     withCredentials: true,
 });
 let store = useUserStore();
@@ -845,7 +845,7 @@ function handleClear() {
                                 :class="{ 'meanBox': (nowCount == 1 || nowCount == 2) && flag == null }">
                                 <span class="meanFunction"
                                     :class="{ 'transprent': (nowCount == 1 || nowCount == 2) && flag == null }">{{
-                                        mean.function
+                                        mean.part
                                     }}</span><span class="meanWord"
                                     :class="{ 'transprent': (nowCount == 1 || nowCount == 2) && flag == null }">{{
                                         mean.content
@@ -872,7 +872,7 @@ function handleClear() {
                         v-for="(deriveWord, index) in  deriveOption " @click="handleChick(index)">
                         <div style="margin: 14px 0px auto 21px;">
                             <span v-show="!ansValid || ansValid && (!optionValid[index] && index != ans)" class="Function">
-                                {{ deriveWord.meaning.function }}
+                                {{ deriveWord.meaning.part }}
                             </span>
                             <span v-show="!ansValid || ansValid && (!optionValid[index] && index != ans)"
                                 class="meaningContent"
@@ -913,12 +913,12 @@ function handleClear() {
                             <ul id="derive">
                                 <span style="position: absolute;left: 4px;scale: 0.65;color: #ff6f00;">&#9658;</span>
                                 <li><span>{{ nowSpell }}</span><span style="margin:0px 3px 0 10px ;">{{
-                                    nowMeaning[0].function
+                                    nowMeaning[0].part
                                 }}</span><span style="display: block;">{{ nowMeaning[0].content }}</span></li>
                                 <li v-for="derive in deriveWords">
                                     <span style="position: absolute;left: 4px;scale: 0.65;color: #ff6f00;">&#9658;</span>
                                     <span>{{ derive.spell }}</span>
-                                    <span style="margin:0px 3px 0 10px ;">{{ derive.meaning[0].function }}</span>
+                                    <span style="margin:0px 3px 0 10px ;">{{ derive.meaning[0].part }}</span>
                                     <span style="display: block;">{{ derive.meaning[0].content }}</span>
                                 </li>
                             </ul>
