@@ -24,8 +24,8 @@ export default defineConfig({
         proxy: {
             // 本地开发环境通过代理实现跨域
             '/api': {
-                //target: 'http://localhost:8010/', //后端本地地址
-                target: 'http://47.115.226.106:8010/', //后端云端地址
+                target: 'http://localhost:8010/', //后端本地地址
+                //target: 'http://47.115.226.106:8010/', //后端云端地址
                 changeOrigin: true,
                 rewrite: (path) => path.replace(/^\/api/, ""),
             }

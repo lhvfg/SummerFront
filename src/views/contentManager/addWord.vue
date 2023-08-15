@@ -1,10 +1,12 @@
 <script setup>
-import { ref, reactive, watch, onMounted } from 'vue'
+import { ref, reactive, onMounted } from 'vue'
+import { useUserStore } from "../../stores/User"
 import { useRouter } from "vue-router";
 import axios from "axios";
-import { useUserStore } from "../stores/User"
 
-const userStore = useUserStore();
+const router = useRouter();
+let store = useUserStore();
+
 const spell = ref('');
 let meaningList = ref([{
     mean: null,
@@ -23,7 +25,7 @@ const types = [0, 1, 2]
 let typeValue;
 let deletIndex;
 const Request = axios.create({
-    baseURL:'api',
+    baseURL: 'api',
     timeout: 3000,
     withCredentials: true,
 });
@@ -65,7 +67,7 @@ onMounted(() => {
         (res) => {
             console.log(res);
             books.value = res.data.bookList;
-            books.value = books.value.filter((item) => { return item.hide != 1||item.userId==localStorage.getItem("userId") });
+            books.value = books.value.filter((item) => { return item.hide != 1 || item.userId == localStorage.getItem("userId") });
             console.log(books.value);
         })
 })
@@ -212,7 +214,6 @@ function choose(i, id) {
         console.log(checkedBook);
     }
 }
-
 //添加单词
 function createWord() {
     let request = {
@@ -250,11 +251,22 @@ function createWord() {
     )
 
 }
-
+//返回
+function back() {
+    router.push('/contentManager')
+}
 
 </script>
 <template>
-    <div>
+    <div class="main">
+        <div class="top">
+            <span class="viewName">新增与修改单词</span>
+            <button class="buttonCommon outButton" @click="back">
+                <el-icon>
+                    <ArrowLeft />
+                </el-icon>
+            </button>
+        </div>
         <el-dialog v-model="centerDialogVisible" title="Warning" width="30%" align-center>
             <span>{{ dialog }}</span>
             <template #footer>
@@ -266,59 +278,44 @@ function createWord() {
                 </span>
             </template>
         </el-dialog>
-        <form @submit.prevent="createWord">
-            <ul>
-                <li>
-                    <input v-model="spell" type="text" placeholder="拼写" @keyup="checkSpell()">
-                </li>
-                <li class="namejudge" :class="{ 'wrong': !validSpell, 'right': validSpell }">
-                    {{ spellValidationText }}
-                </li>
-                <li v-for="(meaning, index) in meaningList">
-                    <input v-model="meaning.part" type="text" placeholder="词性">
-                    <input v-model="meaning.mean" type="text" placeholder="对应释义">
-                    <button type="button" @click="addMeaning(index)">添加</button>
-                    <button type="button" @click="deleteMeaningRequest(index, types[0])">删除</button>
-                </li>
-                <li v-for="(sentence, index) in sentences">
-                    <input v-model="sentence.content" type="text" placeholder="例句">
-                    <input v-model="sentence.contentMean" type="text" placeholder="中文释义">
-                    <button type="button" @click="addSentence(index)">添加</button>
-                    <button type="button" @click="deleteSentenceRequest(index, types[1])">删除</button>
-                </li>
-                <li v-for="(note, index) in notes">
-                    <input v-model="note.content" type="text" placeholder="笔记">
-                    <button type="button" @click="addNote(index)">添加</button>
-                    <button type="button" @click="deleteNoteRequest(index, types[2])">删除</button>
-                </li>
-                <li v-for="(book, index) in books">
-                    {{ book.bookName }}<input v-model="dis[index]" type="checkbox" @change="choose(index, book.id)" />
-                </li>
-                <li>
-                    <button type="submit">
-                        创建单词
-                    </button>
-                </li>
-            </ul>
-        </form>
+        <div class="whiteBoxPlus">
+            <form @submit.prevent="createWord" style="display: flex;justify-content: center;">
+                <ul>
+                    <li style="margin: 0;">
+                        <input v-model="spell" type="text" placeholder="拼写" @keyup="checkSpell()">
+                    </li>
+                    <li style="margin: 0;" class="namejudge" :class="{ 'wrong': !validSpell, 'right': validSpell }">
+                        {{ spellValidationText }}
+                    </li>
+                    <li v-for="(meaning, index) in meaningList">
+                        <input v-model="meaning.part" type="text" placeholder="词性">
+                        <input v-model="meaning.mean" type="text" placeholder="对应释义">
+                        <button type="button" @click="addMeaning(index)">添加</button>
+                        <button type="button" @click="deleteMeaningRequest(index, types[0])">删除</button>
+                    </li>
+                    <li v-for="(sentence, index) in sentences">
+                        <input v-model="sentence.content" type="text" placeholder="例句">
+                        <input v-model="sentence.contentMean" type="text" placeholder="中文释义">
+                        <button type="button" @click="addSentence(index)">添加</button>
+                        <button type="button" @click="deleteSentenceRequest(index, types[1])">删除</button>
+                    </li>
+                    <li v-for="(note, index) in notes">
+                        <input v-model="note.content" type="text" placeholder="笔记">
+                        <button type="button" @click="addNote(index)">添加</button>
+                        <button type="button" @click="deleteNoteRequest(index, types[2])">删除</button>
+                    </li>
+                    <span >请选择添加进的词书:</span>
+                    <li v-for="(book, index) in books" style="margin: 0;">
+                        {{ book.bookName }}<input v-model="dis[index]" type="checkbox" @change="choose(index, book.id)" />
+                    </li>
+                    <li>
+                        <button type="submit">
+                            创建单词
+                        </button>
+                    </li>
+                </ul>
+            </form>
+        </div>
     </div>
 </template>
-<style scoped>
-.wrong {
-    color: hotpink;
-}
-
-.right {
-    color: #00c700;
-}
-
-.dialog-footer button:first-child {
-    margin-right: 10px;
-}
-
-* {
-    padding: 0;
-    margin: 0;
-    font-family: Arial, Helvetica, sans-serif;
-}
-</style>
+<style scoped>@import './contentManager.css';</style>

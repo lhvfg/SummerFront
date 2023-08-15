@@ -1020,7 +1020,7 @@ function handleClear() {
 
     </div>
     <div class="main" style="background: #fffdf9;" v-show="overShowValid">
-        <img src="../../../public/OIP-C.jpg" class="overSmile">
+        <img src="../../../OIP-C.jpg" class="overSmile">
         <div class="flexBox">
             <h2>本组单词复习完成</h2>
             <span class="fontGrey" style="margin: 6px 0 26px;">还有<span style="color: #ff6f00; margin: 0 4px;">{{ less }}</span>个单词需要复习</span>

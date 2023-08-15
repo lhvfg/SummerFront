@@ -4,7 +4,6 @@ import { useRouter } from "vue-router";
 import axios from "axios";
 import { useUserStore } from "../../stores/User"
 import { storeToRefs } from 'pinia';
-import Dashboard from '../dashboard/dashboard.vue';
 
 const Request = axios.create({
     baseURL: '/api',
@@ -218,7 +217,7 @@ function handleClockin() {
     <div class="allbox">
         <div>
             <button class="avatarBox" @click="drawer = true">
-                <el-avatar class="avatar" src="../../public/default.jpg"></el-avatar>
+                <el-avatar class="avatar" src="/default.jpg"></el-avatar>
             </button>
             <el-drawer v-model="drawer" title="I am the title" :with-header="false" direction="ltr" size="260px"
                 open-delay="0.4s">

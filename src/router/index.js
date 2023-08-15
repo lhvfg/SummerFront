@@ -29,19 +29,19 @@ const router = createRouter({
             path: "/addword",
             name: "addWord",
             component: () =>
-                import ("../views/addWord.vue"),
+                import ("../views/contentManager/addWord.vue"),
         },
         {
             path: "/uploadWord",
             name: "uploadWord",
             component: () =>
-                import ("../views/uploadWord.vue"),
+                import ("../views/contentManager/uploadWord.vue"),
         },
         {
             path: "/addBook",
             name: "addBook",
             component: () =>
-                import ("../views/addBook.vue"),
+                import ("../views/contentManager/addBook.vue"),
         },
         {
             path: "/learn",

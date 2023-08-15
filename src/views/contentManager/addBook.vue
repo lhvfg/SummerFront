@@ -2,7 +2,7 @@
 import { ref, reactive, onMounted } from 'vue';
 import { useRouter } from "vue-router";
 import axios from "axios";
-import { useUserStore } from "../stores/User"
+import { useUserStore } from "../../stores/User"
 import { ElMessage } from "element-plus";
 
 const userStore = useUserStore();

@@ -145,37 +145,48 @@ onMounted(() => {
     Request.post("/recite", request).then(
         (res) => {
             console.log(res);
-            console.log(111);
             if (res.data.status == "reciteWords") {
-                //count = 0,理论上会有小于10个的情况，但是目前不太遇得到，所以可以默认count = 0的数组长度一定是大于等于10的
+                //count = 0
                 wordData.value[0] = reciteWord.value[0] = res.data.reciteNewWordDates;
+                if (reciteWord.value[0].length == 0) {
+                    console.log("没有count = 0的单词");
+                    console.log(wordData.value[0]);
+                    wordData.value[0] = new Array();
+                    console.log(wordData.value[0].length);
+                }
                 //count = 1
                 reciteWord.value[1] = res.data.reciteOneWordDates;
-                if (reciteWord.value[1].length > 0)
-                    wordData.value[1] = reciteWord.value[1].splice(0, reciteWord.value[1].length > 3 ? 2 : reciteWord.value[1].length - 1);
+                if (reciteWord.value[1].length > 0) {
+                    wordData.value[1] = reciteWord.value[1].splice(0, reciteWord.value[1].length > 3 ? 3 : reciteWord.value[1].length);
+                    console.log(wordData.value[1]);
+                }
                 else {
-                    //新用户
+                    console.log("没有count = 1的单词");
                     wordData.value[1] = new Array();
                 }
                 //count = 2
                 reciteWord.value[2] = res.data.reciteTwoWordDates;
-                if (reciteWord.value[2].length > 0)
-                    wordData.value[2] = reciteWord.value[2].splice(0, reciteWord.value[2].length > 4 ? 3 : reciteWord.value[2].length - 1);
+                if (reciteWord.value[2].length > 0) {
+                    wordData.value[2] = reciteWord.value[2].splice(0, reciteWord.value[2].length > 4 ? 4 : reciteWord.value[2].length);
+                    console.log(wordData.value[2]);
+                }
                 else {
+                    console.log("没有count = 1的单词");
                     wordData.value[2] = new Array();
                 }
-                //console.log(reciteWord.value[0]);
-                //console.log(reciteWord.value[1]);
-                //console.log(reciteWord.value[2]);
+                // console.log(reciteWord.value[0]);
+                // console.log(reciteWord.value[1]);
+                // console.log(reciteWord.value[2]);
                 for (var i = 0; i < 3; i++) {
-                    len[i] = reciteWord.value[i].length;
+                    len[i] = wordData.value[i].length;
+                    console.log("count"+i+"数组的长度为"+len[i]);
                 }
                 //明确要背的数量
                 if (len[0] + len[1] + len[2] < 10) {
                     maxNum.value = len[0] + len[1] + len[2];
                 }
-                console.log(reciteWord.value[0]);
-                console.log(len[0]+' '+len[1]+' '+len[2]);
+                // console.log(reciteWord.value[0]);
+                // console.log(len[0]+' '+len[1]+' '+len[2]);
                 handleData();
                 handleShow();
             }
@@ -200,7 +211,9 @@ onMounted(() => {
 function handleData(num) {
     //初次进入寻找数据
     if (num == null) {
-        while (wordData.value[nowCount].length == 0 && nowCount < 3) {
+        while (nowCount < 3 && wordData.value[nowCount].length == 0) {
+            console.log("现在的count是" + nowCount);
+            console.log(wordData.value[nowCount]);
             console.log("nowCount++");
             nowCount++;
         }
@@ -498,11 +511,11 @@ function handleArray(flag, nowCount) {
     }
     //处理一下每个数组有无数据的判定
     for (var i = 0; i < 3; i++) {
-            countOver[i] = false;
-            if (wordData.value[i].length == 0) {
-                countOver[i] = true;
-            }
+        countOver[i] = false;
+        if (wordData.value[i].length == 0) {
+            countOver[i] = true;
         }
+    }
     console.log("现在数组里：");
     for (var i = 0; i < 3; i++) {
         console.log(wordData.value[i]);
@@ -906,7 +919,7 @@ function handleClear() {
                     <span class="fontGrey promptFont" v-if="!promptUsed">提示一下</span>
                 </button>
                 <span v-show="tip2Valid" class="tip2">本词最后一关<img class="winkSmile"
-                        src="../../../public/093E7A6B.png">:请在无提示的情况下判断</span>
+                        src="../../../093E7A6B.png">:请在无提示的情况下判断</span>
             </div>
             <div v-show="answerValid" class="answer">
                 <div class="detailBox optionGrey">
