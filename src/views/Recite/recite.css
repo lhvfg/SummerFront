@@ -11,7 +11,7 @@
 }
 
 .main {
-    background: url(../../../alarm.jpg);
+    background: url(/public/alarm.jpg);
     background-repeat: no-repeat;
     background-attachment: fixed;
     background-size: cover;
