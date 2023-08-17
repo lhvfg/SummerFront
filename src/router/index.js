@@ -68,6 +68,30 @@ const router = createRouter({
                 import ("../views/dashboard/dashboard.vue"),
         },
         {
+            path: "/allRecited",
+            name: "allRecited",
+            component: () =>
+                import ("../views/mycontent/allRecited.vue"),
+        },
+        {
+            path: "/learning",
+            name: "learning",
+            component: () =>
+                import ("../views/mycontent/learning.vue"),
+        },
+        {
+            path: "/note",
+            name: "note",
+            component: () =>
+                import ("../views/mycontent/note.vue"),
+        },
+        {
+            path: "/star",
+            name: "star",
+            component: () =>
+                import ("../views/mycontent/star.vue"),
+        },
+        {
             path: "/",
             redirect: {
                 name: "login",

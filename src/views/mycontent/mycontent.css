@@ -2,6 +2,7 @@
     padding: 0;
     margin: 0;
     font-family: Arial, Helvetica, sans-serif;
+    list-style: none;
     /* background: transparent;
     border: none; */
 }
@@ -38,10 +39,89 @@
     color: black;
 }
 
+.eye {
+    position: absolute;
+    right: 95px;
+    scale: 1.4;
+    top: 16.2px;
+    cursor: pointer;
+}
+
 .buttonBox {
     margin: 24px 15px;
     display: flex;
     cursor: pointer;
+}
+
+.greyBox {
+    position: relative;
+    background-color: #c8c8c857;
+    top: 30px;
+    width: 29%;
+    height: 36px;
+    margin: 0 auto;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    border-radius: 7px;
+}
+
+.wordList>ul>li>ul {
+    position: relative;
+}
+
+.wordList>ul>li>span {
+    display: block;
+    margin: 11px 0 3px 0;
+    font-weight: 600;
+}
+
+.wordLine {
+    width: 400px;
+    margin-top: 10px;
+}
+
+.wordBox {
+    padding: 0 48px;
+    width: 505px;
+    margin-left: -44px;
+    display: flex;
+    flex-direction: column;
+}
+
+.fontOrange {
+    color: #f56c6c;
+}
+
+.orangeBox {
+    background-color: #fccfb8a3;
+}
+
+.contentChose {
+    cursor: pointer;
+    background: transparent;
+    border: none;
+    width: 68px;
+    height: 28px;
+    border-radius: 5px;
+}
+
+.star {
+    position: absolute;
+    right: 100px;
+    bottom: -2px;
+    scale: 1.3;
+}
+
+.organ .contentButton {
+    width: 80px;
+    height: 26px;
+    /* background-color: white; */
+    border-radius: 7px;
+}
+
+.white {
+    background-color: white;
 }
 
 .icon {
@@ -74,11 +154,31 @@
     text-align: center;
 }
 
+.rightWord1,
+.rightWord2,
 .rightArrow {
+    color: rgb(114, 113, 113);
     display: inline-block;
     height: 32px;
-    line-height: 38px;
+}
+
+.rightWord1,
+.rightWord2 {
+    font-size: 4px;
+    line-height: 32.5px;
+}
+
+.rightArrow {
+    line-height: 37px;
+    font-size: 12px;
+}
+
+.rightWord1 {
     margin-left: 36px;
+}
+
+.rightWord2 {
+    margin: 0 4px;
 }
 
 .organ {
@@ -110,14 +210,20 @@
 
 /* .myDataBox {} */
 
-.whiteBox {
+.whiteBox,
+.whiteBoxPlus {
     position: relative;
     background: white;
-    margin: 30px auto;
+    margin: 47px auto;
     width: 40%;
     border-radius: 14px;
     display: flex;
     flex-direction: column;
+}
+
+.numTip {
+    display: flex;
+    align-items: center;
 }
 
 .book,

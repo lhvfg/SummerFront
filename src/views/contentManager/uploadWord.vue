@@ -84,30 +84,27 @@ const submitUpload = (): void => {
                 //清空数据
                 checkedBook = [];
                 upload.value!.clearFiles();
-                for(var i = 0;i < books.value.length;i++)
-                {
+                for (var i = 0; i < books.value.length; i++) {
                     dis.value[i] = false;
                 }
             }
-            else{
+            else {
                 ElMessage({
-                        type: "error",
-                        message: "出错了",
-                        duration: 2000,
-                    });
+                    type: "error",
+                    message: "出错了",
+                    duration: 2000,
+                });
             }
         })
         .catch(error => {
             console.error(error);
             ElMessage({
-                        type: "error",
-                        message: "出错了",
-                        duration: 2000,
-                    });
+                type: "error",
+                message: "出错了",
+                duration: 2000,
+            });
         });
 }
-
-
 //单词书列表
 onMounted(() => {
     const request = {
@@ -135,50 +132,58 @@ function choose(i: number, id: number): void {
     }
 }
 function back() {
-    router.push('/main')
+    router.push('/contentManager')
 }
 </script>
 
 <template>
-    <button class="outButton" @click="back"><el-icon>
-            <ArrowLeft />
-        </el-icon></button>
-    <el-dialog v-model="centerDialogVisible" title="Warning" width="30%" align-center>
-        <span>{{ dialog }}</span>
-        <template #footer>
-            <span class="dialog-footer">
-                <el-button @click="centerDialogVisible = false">Cancel</el-button>
-                <el-button type="primary" @click="submitUpload">
-                    Confirm
+    <div class="main">
+        <div class="top">
+            <span class="viewName">上传单词</span>
+            <button class="buttonCommon outButton" @click="back">
+                <el-icon>
+                    <ArrowLeft />
+                </el-icon>
+            </button>
+        </div>
+        <div class="whiteBoxPlus">
+            <el-dialog v-model="centerDialogVisible" title="Warning" width="30%" align-center>
+                <span>{{ dialog }}</span>
+                <template #footer>
+                    <span class="dialog-footer">
+                        <el-button @click="centerDialogVisible = false" >Cancel</el-button>
+                        <el-button type="primary" @click="submitUpload">
+                            Confirm
+                        </el-button>
+                    </span>
+                </template>
+            </el-dialog>
+            <el-upload ref="upload" class="upload-demo"
+                action="https://run.mocky.io/v3/9d059bf9-4660-45f2-925d-ce80ad6c4d15" :limit="1" :on-change="handleChange"
+                :on-exceed="handleExceed" :auto-upload="false">
+                <template #trigger>
+                    <el-button type="primary" style="margin: 0 10px;width: 82px;">select file</el-button>
+                </template>
+                <el-button class="ml-3" type="success" @click="bookIdCheck" style="width: 121px;">
+                    upload to server
                 </el-button>
-            </span>
-        </template>
-    </el-dialog>
-    <el-upload ref="upload" class="upload-demo" action="https://run.mocky.io/v3/9d059bf9-4660-45f2-925d-ce80ad6c4d15"
-        :limit="1" :on-change="handleChange" :on-exceed="handleExceed" :auto-upload="false">
-        <template #trigger>
-            <el-button type="primary">select file</el-button>
-        </template>
-        <el-button class="ml-3" type="success" @click="bookIdCheck">
-            upload to server
-        </el-button>
-        <template #tip>
-            <div class="el-upload__tip text-red">
-                limit 1 file, new file will cover the old file
-            </div>
-        </template>
-    </el-upload>
-    <ul>
-        <li>选择要添加进的单词书：</li>
-        <li v-for="(book, index) in books">
-            {{ book.bookName }}<input v-model="dis[index]" type="checkbox" @change="choose(index, book.id)" />
-        </li>
-    </ul>
+                <template #tip>
+                    <div class="el-upload__tip text-red" style="margin: 7px 0 5px 13px;">
+                        limit 1 file, new file will cover the old file
+                    </div>
+                </template>
+            </el-upload>
+            <ul style="margin-left: 13px;">
+                <li style="font-size: 13px;">选择要添加进的单词书：</li>
+                <li v-for="(book, index) in books">
+                    {{ book.bookName }}<input v-model="dis[index]" type="checkbox" @change="choose(index, book.id)" style="margin: 4px;"/>
+                </li>
+            </ul>
+        </div>
+    </div>
 </template>
   
 <style scoped>
-.dialog-footer button:first-child {
-    margin-right: 10px;
-}
+@import './contentManager.css';
 </style>
   

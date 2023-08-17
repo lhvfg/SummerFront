@@ -38,7 +38,6 @@ onMounted(() => {
             console.log(words.value);
         })
 })
-
 function checkBookname() {
     clearTimeout(flag);
     flag = setTimeout(() => {
@@ -66,7 +65,6 @@ function checkBookname() {
 
 
 }
-
 function choose(i,id) {
     if (dis.value[i]) {
         console.log(id + '号单词被选中');
@@ -80,7 +78,6 @@ function choose(i,id) {
         console.log(checkedWord);
     }
 }
-
 function createBookCheck() {
     console.log(666);
     if (bookName.value == null || !validBookName.value) {
@@ -101,7 +98,6 @@ function createBookCheck() {
         }
     }
 }
-
 function createBook() {
     console.log(userStore.userId);
     console.log(sessionStorage.getItem("userId"));
@@ -137,12 +133,24 @@ function createBook() {
         }
     )
 }
-
+//返回
+function back() {
+    router.push('/contentManager')
+}
 
 </script>
 <template>
-    <div>
-        <el-dialog v-model="centerDialogVisible" title="Warning" width="30%" align-center>
+    <div class="main">
+        <div class="top">
+            <span class="viewName">新增单词书</span>
+            <button class="buttonCommon outButton" @click="back">
+                <el-icon>
+                    <ArrowLeft />
+                </el-icon>
+            </button>
+        </div>
+        <div class="whiteBoxPlus">
+            <el-dialog v-model="centerDialogVisible" title="Warning" width="30%" align-center>
             <span>There are no words in the book, are you sure?</span>
             <template #footer>
                 <span class="dialog-footer">
@@ -153,7 +161,11 @@ function createBook() {
                 </span>
             </template>
         </el-dialog>
-        <form @submit.prevent="createBookCheck">
+        <form @submit.prevent="createBookCheck" style="display: flex;
+    justify-content: center;
+    flex-direction: column;
+    width: 326px;
+    margin: 0 auto;">
             <input v-model="bookName" type="text" placeholder="bookName" @keyup="checkBookname()">
             <li class="namejudge" :class="{ 'wrong': !validBookName, 'right': validBookName }">
                 {{ booknameValidationText }}
@@ -163,31 +175,14 @@ function createBook() {
                     {{ word.spell }} <input v-model="dis[index]" type="checkbox" @change="choose(index,word.id)" />
                 </li>
             </ul>
-            <span>是否共享单词书</span><input v-model="hide" type="checkbox" />
+            <span>是否共享单词书<input v-model="hide" type="checkbox" style="display: inline-block;margin-left: 4px;"/></span>
             <br>
-            <button type="submit">创建单词书</button>
+            <button type="submit" style="margin: 10px 0;" class="buttonCommon">创建单词书</button>
         </form>
+        </div>
+
     </div>
 </template>
 <style scoped>
-.dialog-footer button:first-child {
-    margin-right: 10px;
-}
-
-* {
-    padding: 0;
-    margin: 0;
-    font-family: Arial, Helvetica, sans-serif;
-}
-
-
-.wrong {
-    color: hotpink;
-}
-
-.right {
-    color: #00c700;
-}
-
-
+@import './contentManager.css';
 </style>
