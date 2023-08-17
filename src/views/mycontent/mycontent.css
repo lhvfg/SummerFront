@@ -76,6 +76,11 @@
     font-weight: 600;
 }
 
+.wordList>ul>li>ul>li {
+    display: block;
+    width: 402px;
+}
+
 .wordLine {
     width: 400px;
     margin-top: 10px;
@@ -108,7 +113,7 @@
 
 .star {
     position: absolute;
-    right: 100px;
+    right: 88px;
     bottom: -2px;
     scale: 1.3;
 }
