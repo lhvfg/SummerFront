@@ -29,6 +29,7 @@ var day = ref(new Date().getDate());
 day.value = (day.value < 10 ? '0' : '') + day.value + '  ';
 const weeks = ref(["Sun.", "Mon.", "Tues.", "Wed.", "Thur.", "Fri.", "Sat."]);
 const nowDay = computed(() => weeks.value[new Date().getDay()]);
+let t = 0.4
 
 onMounted(() => {
     let request1 = {
@@ -220,7 +221,7 @@ function handleClockin() {
                 <el-avatar class="avatar" src="/default.jpg"></el-avatar>
             </button>
             <el-drawer v-model="drawer" title="I am the title" :with-header="false" direction="ltr" size="260px"
-                open-delay="0.4s">
+                :open-delay="t" >
                 <button class="drawerButton"><el-icon class="drawerImg">
                         <User />
                     </el-icon><span class="drawerWord">个人设置</span><el-icon class="right">

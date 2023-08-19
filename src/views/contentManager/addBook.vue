@@ -1,5 +1,5 @@
 <script setup>
-import { ref, reactive, onMounted } from 'vue';
+import { ref, reactive, onMounted, watch } from 'vue';
 import { useRouter } from "vue-router";
 import axios from "axios";
 import { useUserStore } from "../../stores/User"
@@ -16,16 +16,18 @@ const bookName = ref('');
 const hide = ref(false);
 let bookId;
 var flag;
-
-
+//总页数
+let pages;
+//当前页码
+const nowPage = ref(1)
 var checkedWord = new Array();
 
 const Request = axios.create({
-    baseURL:'api',
+    baseURL: 'api',
     timeout: 3000,
     withCredentials: true,
 });
-
+//获取第一页的数据
 onMounted(() => {
     let request = {
         requestType: "getWordList",
@@ -34,8 +36,19 @@ onMounted(() => {
     Request.post("/addBook", request).then(
         (res) => {
             console.log(res);
-            words.value = res.data.wordList;
-            console.log(words.value);
+            if (res.data.status == 'wordList') {
+                words.value = res.data.wordList;
+                pages = res.data.pages;
+                console.log(pages);
+            }
+            else if (res.data.status == 'block') {
+                router.push('/login');
+                ElMessage({
+                    type: "error",
+                    message: "登陆过期或未登录！",
+                    duration: 2000,
+                });
+            }
         })
 })
 function checkBookname() {
@@ -65,7 +78,7 @@ function checkBookname() {
 
 
 }
-function choose(i,id) {
+function choose(i, id) {
     if (dis.value[i]) {
         console.log(id + '号单词被选中');
         checkedWord.push(id);
@@ -137,7 +150,21 @@ function createBook() {
 function back() {
     router.push('/contentManager')
 }
-
+//获取下一页的数据
+watch(nowPage, (newCount) => {
+    console.log(newCount);
+    let request = {
+        requestType: "getWordList",
+        pageNumber: newCount
+    };
+    Request.post("/addBook", request).then(
+        (res) => {
+            console.log(res);
+            words.value = res.data.wordList;
+            pages = res.data.pages;
+            console.log(pages);
+        })
+})
 </script>
 <template>
     <div class="main">
@@ -149,40 +176,47 @@ function back() {
                 </el-icon>
             </button>
         </div>
-        <div class="whiteBoxPlus">
+        <div class="whiteBoxPlus" style="top: 8px;">
             <el-dialog v-model="centerDialogVisible" title="Warning" width="30%" align-center>
-            <span>There are no words in the book, are you sure?</span>
-            <template #footer>
-                <span class="dialog-footer">
-                    <el-button @click="centerDialogVisible = false">Cancel</el-button>
-                    <el-button type="primary" @click="createBook">
-                        Confirm
-                    </el-button>
-                </span>
-            </template>
-        </el-dialog>
-        <form @submit.prevent="createBookCheck" style="display: flex;
+                <span>There are no words in the book, are you sure?</span>
+                <template #footer>
+                    <span class="dialog-footer">
+                        <el-button @click="centerDialogVisible = false">Cancel</el-button>
+                        <el-button type="primary" @click="createBook">
+                            Confirm
+                        </el-button>
+                    </span>
+                </template>
+            </el-dialog>
+            <form @submit.prevent="createBookCheck" style="display: flex;
     justify-content: center;
     flex-direction: column;
     width: 326px;
     margin: 0 auto;">
-            <input v-model="bookName" type="text" placeholder="bookName" @keyup="checkBookname()">
-            <li class="namejudge" :class="{ 'wrong': !validBookName, 'right': validBookName }">
-                {{ booknameValidationText }}
-            </li>
-            <ul>
-                <li v-for="(word,index) in words">
-                    {{ word.spell }} <input v-model="dis[index]" type="checkbox" @change="choose(index,word.id)" />
+                <input style="height: 24px;" v-model="bookName" type="text" placeholder="bookName" @keyup="checkBookname()">
+                <li class="namejudge" :class="{ 'wrong': !validBookName, 'right': validBookName }">
+                    {{ booknameValidationText }}
                 </li>
-            </ul>
-            <span>是否共享单词书<input v-model="hide" type="checkbox" style="display: inline-block;margin-left: 4px;"/></span>
-            <br>
-            <button type="submit" style="margin: 10px 0;" class="buttonCommon">创建单词书</button>
-        </form>
+                <ul>
+                    <li v-for="(word, index) in words">
+                        {{ word.spell }} <input v-model="dis[index]" type="checkbox" @change="choose(index, word.id)" />
+                    </li>
+                </ul>
+                <div class="example-pagination-block" style="margin: 10px 0 15px;">
+                    <el-pagination layout="prev, pager, next" :total="pages * 10" v-model:current-page="nowPage" />
+                </div>
+                <span>是否共享单词书<input v-model="hide" type="checkbox" style="display: inline-block;margin-left: 4px;" /></span>
+                <br>
+                <button type="submit" style="margin: 10px 0;" class="buttonCommon">创建单词书</button>
+            </form>
         </div>
 
     </div>
 </template>
 <style scoped>
 @import './contentManager.css';
+
+.example-pagination-block+.example-pagination-block {
+    margin: 10px 5px;
+}
 </style>

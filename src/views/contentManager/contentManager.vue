@@ -104,7 +104,7 @@ function chooseBook() {
                         duration: 2000,
                     });
                     localStorage.setItem("chooseBookId", books.value.find(item => item.bookName == bookName.value).id);
-                    store.$status.bookName = bookName.value;
+                    store.$state.bookName = bookName.value;
                     // clearAll();
                 }
                 else {

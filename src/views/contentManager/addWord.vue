@@ -226,7 +226,7 @@ function createWord() {
         sentenceContent: sentences.value.map(item => item.content),
         sentenceContentMean: sentences.value.map(item => item.contentMean),
         noteContent: notes.value.map(item => item.content),
-        userId: userStore.userId,
+        userId: store.$state.userId,
         bookId: checkedBook
     };
     Request.post("/addword", request).then(
