@@ -245,7 +245,7 @@ function handleClockin() {
                     <Check />
                 </el-icon></span>
             <span v-show="clocking" style="margin-top: 7px;margin-bottom: 12px;font-size: 15px;">已累计登录<span style="margin: 2px;color: #f56c6c;">{{ successive }}</span>天</span>
-            <span v-show="!clockinValid" style="font-size: 38px;font-weight: bolder;">Clock</span>
+            <span v-show="!clockinValid" style="font-size: 38px;font-weight: bolder;">Rest</span>
         </button>
         <div class="mid">
             <el-button text @click="Learn" class="glass studyButton">

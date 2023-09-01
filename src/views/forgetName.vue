@@ -138,7 +138,7 @@ function handleChangePassword() {
 }
 </script>
 <template>
-    <div style="width: 98vw;height: 100vw;background-color: #d7daca;">
+    <div class="allbox">
         <div class="main tall">
             <div class="new-box mid">
                 <div class="title">change password</div>
@@ -184,6 +184,18 @@ body {
     background-color: #d7daca;
     height: 98vw;
     width: 100vw;
+}
+
+.allbox{
+    height: 56.26vw;
+    margin: 0;
+    padding: 0;
+    background: url(/book.jpg);
+    background-repeat: no-repeat;
+    background-attachment: fixed;
+    background-size: cover;
+    -moz-background-size: cover;
+    -webkit-background-size: cover;
 }
 
 .imgbox {
@@ -273,7 +285,9 @@ li input {
     outline: none;
     color: white;
 }
-
+li input::placeholder {
+    color: rgb(67, 67, 67);
+}
 li button {
     font-size: 20px;
     padding: 5px;
@@ -321,7 +335,7 @@ ul span {
 
 .change-new,
 .change-login {
-    color: aqua;
+    color: #fd532b;
     font-size: 13px;
 }
 

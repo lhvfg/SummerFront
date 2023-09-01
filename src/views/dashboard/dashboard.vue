@@ -228,33 +228,38 @@ function backToMain() {
         <div class="myDataBox">
             <h2 class="bigWord title">我的数据</h2>
             <div class="whiteBox" style="padding-bottom: 10px;">
-                <div class="dataBox1">
-                    <el-icon>
+                <div class="dataRow1">
+                    <div class="dataBox" style="margin-left: 8px;
+    margin-right: 27px;">
+                    <el-icon style="color: rgb(255 156 0);">
                         <Finished />
                     </el-icon>
                     <span class="smallWord">今日学习&复习</span>
-                    <span><span>{{ data.todayNum!=null?data.todayNum:0 }}</span>词</span>
-                </div>
-                <div class="dataBox2">
-                    <el-icon>
+                    <div><span>{{ data.todayNum!=null?data.todayNum:0 }}</span><span style="font-size: small;margin-left: 4px;" class="fontGrey smallWord">词</span></div>
+                    </div>
+                    <div class="dataBox">
+                    <el-icon style="color: rgb(231 0 0)">
                         <TrendCharts />
                     </el-icon>
                     <span class="smallWord">累计学习</span>
-                    <span><span>{{ data.allRecitedNum!=null?data.allRecitedNum:0 }}</span>词</span>
+                    <div><span>{{ data.allRecitedNum!=null?data.allRecitedNum:0 }}</span><span style="font-size: small;margin-left: 4px;" class="fontGrey smallWord">词</span></div>
+                    </div>
                 </div>
-                <div class="dataBox3">
-                    <el-icon>
+                <div class="dataRow2">
+                    <div class="dataBox">
+                    <el-icon style="color: rgb(255 156 0);">
                         <Timer />
                     </el-icon>
                     <span class="smallWord">今日学习时长</span>
-                    <span><span>{{ data.todayTime!=null?data.todayTime:0 }}</span></span>
-                </div>
-                <div class="dataBox4">
-                    <el-icon>
+                    <div><span>{{ data.todayTime!=null?data.todayTime:0 }}</span></div>
+                    </div>
+                    <div class="dataBox">
+                    <el-icon style="color: rgb(231 0 0)">
                         <Clock />
                     </el-icon>
                     <span class="smallWord">累计学习时长</span>
-                    <span><span>{{ data.allTime!=null?data.allTime:0 }}</span></span>
+                    <div><span>{{ data.allTime!=null?data.allTime:0 }}</span></div>
+                    </div>         
                 </div>
             </div>
             <div class="whiteBox" style="padding-top: 10px;">

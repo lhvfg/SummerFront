@@ -136,7 +136,7 @@ let wordNextTime = ref([])
 let overShowValid = ref(false)
 const less = ref()
 
-
+//获取初次数据
 onMounted(() => {
     less.value = store.$state.reviewNum > 10 ? store.$state.reviewNum - 10 : 0;
     console.log(less.value);
@@ -1020,7 +1020,7 @@ function handleClear() {
 
     </div>
     <div class="main" style="background: #fffdf9;" v-show="overShowValid">
-        <img src="/public/OIP-C.jpg" class="overSmile">
+        <img src="/OIP-C.jpg" class="overSmile">
         <div class="flexBox">
             <h2>本组单词复习完成</h2>
             <span class="fontGrey" style="margin: 6px 0 26px;">还有<span style="color: #ff6f00; margin: 0 4px;">{{ less }}</span>个单词需要复习</span>
@@ -1039,7 +1039,6 @@ function handleClear() {
                     </ul>
                 </div>
                     <button class="overButton" @click="router.push('/main')">休息一下</button>
-                    <button v-show="less>0">继续复习</button>
             </div>
         </div>
     </div>

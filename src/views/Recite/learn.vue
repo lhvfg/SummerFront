@@ -919,7 +919,7 @@ function handleClear() {
                     <span class="fontGrey promptFont" v-if="!promptUsed">提示一下</span>
                 </button>
                 <span v-show="tip2Valid" class="tip2">本词最后一关<img class="winkSmile"
-                        src="/public/093E7A6B.png">:请在无提示的情况下判断</span>
+                        src="/093E7A6B.png">:请在无提示的情况下判断</span>
             </div>
             <div v-show="answerValid" class="answer">
                 <div class="detailBox optionGrey">

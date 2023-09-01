@@ -122,11 +122,37 @@
     width: 350px;
 }
 
-.dataBox1,
-.dataBox2,
-.dataBox3,
-.dataBox4 {
+.dataBox {
     margin: 15px;
+}
+
+.dataBox>div {
+    margin-left: 30px;
+}
+
+.dataBox>div>span {
+    font-size: 30px;
+}
+
+.dataRow1,
+.dataRow2 {
+    display: flex;
+    justify-content: space-around;
+    margin: 1px 0 0 -27px;
+}
+
+.dataRow1 {
+    width: 83%;
+}
+
+.dataRow2 {
+    width: 94%;
+}
+
+.dataRow1 i,
+.dataRow2 i {
+    scale: 1.3;
+    margin-right: 13px;
 }
 
 .wrong,
