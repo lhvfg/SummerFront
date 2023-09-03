@@ -62,7 +62,7 @@ function checkBookname() {
             (res) => {
                 console.log(res);
                 console.log(bookName.value);
-                bookId = res.data.bookId;
+                bookId = res.data.bookId+1;
                 if (res.data.status == "bookRename") {
                     validBookName.value = false;
                 }
@@ -78,8 +78,8 @@ function checkBookname() {
 
 
 }
-function choose(i, id) {
-    if (dis.value[i]) {
+function choose(id) {
+    if (dis.value[id]) {
         console.log(id + '号单词被选中');
         checkedWord.push(id);
         console.log(checkedWord);
@@ -198,8 +198,8 @@ watch(nowPage, (newCount) => {
                     {{ booknameValidationText }}
                 </li>
                 <ul>
-                    <li v-for="(word, index) in words">
-                        {{ word.spell }} <input v-model="dis[index]" type="checkbox" @change="choose(index, word.id)" />
+                    <li v-for="word in words">
+                        {{ word.spell }} <input v-model="dis[word.id]" type="checkbox" @change="choose(word.id)" />
                     </li>
                 </ul>
                 <div class="example-pagination-block" style="margin: 10px 0 15px;">

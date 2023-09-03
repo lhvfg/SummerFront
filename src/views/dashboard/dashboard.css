@@ -134,23 +134,21 @@
     font-size: 30px;
 }
 
-.dataRow1,
-.dataRow2 {
-    display: flex;
-    justify-content: space-around;
-    margin: 1px 0 0 -27px;
+.dataRow {
+    /* grid二维网格布局 */
+    display: grid;
+    /*  声明列的宽度  */
+    grid-template-columns: repeat(2, 200px);
+    /*  声明行间距和列间距  */
+    grid-gap: 20px;
+    margin: 1px 0px 0 0px;
 }
 
-.dataRow1 {
+.dataRow {
     width: 83%;
 }
 
-.dataRow2 {
-    width: 94%;
-}
-
-.dataRow1 i,
-.dataRow2 i {
+.dataRow i {
     scale: 1.3;
     margin-right: 13px;
 }

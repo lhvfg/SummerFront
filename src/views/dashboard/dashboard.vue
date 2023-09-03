@@ -28,6 +28,8 @@ const books = ref([])
 const dialogFormVisible = ref(false)
 const formLabelWidth = '140px'
 const clicked = ref(true);
+const todayTime = ref(null);
+const allTime = ref(null);
 
 var flag;
 const form = reactive({
@@ -43,7 +45,7 @@ const form = reactive({
 const bookNames = ref([])
 
 onMounted(() => {
-    if(localStorage.getItem("accumulateDay")==null){
+    if (localStorage.getItem("accumulateDay") == null) {
         clicked.value = false;
     }
     let request = {
@@ -68,14 +70,14 @@ onMounted(() => {
                 });
             }
         })
-    if(localStorage.getItem("chooseBookId")!='null')
-    {
+    if (localStorage.getItem("chooseBookId") != 'null') {
         console.log(localStorage.getItem("chooseBookId"));
         console.log(11);
-        getdashboardData();}
+        getdashboardData();
+    }
 })
 //获取dashboard相关数据
-function getdashboardData(){
+function getdashboardData() {
     let request = {
         requestType: "getData",
         userId: userId,
@@ -87,10 +89,16 @@ function getdashboardData(){
             if (res.data.status == 'getDataSuccess') {
                 data.value = res.data.dashBoardData;
                 percentage.value = Math.floor(data.value.recitedNum / data.value.allStudyNum * 100);
-
+                todayTime.value = getMinute(data.value.todayTime);
+                allTime.value = getMinute(data.value.allTime);
             }
         }
     )
+}
+function getMinute(str) {
+    var timeArray = str.split(':');
+    var minutes = Number(timeArray[0]) * 60 + Number(timeArray[1]) + Math.ceil(Number(timeArray[2]) / 60);
+    return minutes;
 }
 //判定书名
 function checkName() {
@@ -142,7 +150,7 @@ function chooseBook() {
                         message: "选择成功！",
                         duration: 2000,
                     });
-                    bookId = books.value.find(item => item.bookName == bookName.value).id 
+                    bookId = books.value.find(item => item.bookName == bookName.value).id
                     localStorage.setItem("chooseBookId", bookId);
                     //再次获取一次数据
                     getdashboardData()
@@ -168,7 +176,8 @@ function chooseBook() {
 function backToMain() {
     setTimeout(() => {
         router.push('/main');
-    }, 500)}
+    }, 500)
+}
 </script>
 <template>
     <div class="main">
@@ -209,17 +218,18 @@ function backToMain() {
                 </el-dialog>
             </div>
             <div class="whiteBox" style="height: 230px">
-                <div class="book">{{ data.bookName!=null?data.bookName:"无" }}</div>
-                <span class="starBook midWord">生词本<span style="margin-left: 5px;font-size: 16px;">{{ data.starNum!=null?data.starNum:0}}</span></span>
+                <div class="book">{{ data.bookName != null ? data.bookName : "无" }}</div>
+                <span class="starBook midWord">生词本<span style="margin-left: 5px;font-size: 16px;">{{
+                    data.starNum != null ? data.starNum : 0 }}</span></span>
                 <div class="progressBox">
                     <div>
                         <div class="demo-progress">
                             <el-progress :percentage="percentage" :color="customColor" :show-text="false"
                                 :stroke-width="8" />
                             <span class="fontGrey midWord" style="float: left;">已学习<span style="margin-left: 5px;">{{
-                                data.recitedNum!=null?data.recitedNum:0 }}</span></span>
+                                data.recitedNum != null ? data.recitedNum : 0 }}</span></span>
                             <span class="fontGrey midWord" style="float: right;">总词数<span style="margin-left: 5px;">{{
-                                data.allStudyNum!=null?data.allStudyNum:0 }}</span></span>
+                                data.allStudyNum != null ? data.allStudyNum : 0 }}</span></span>
                         </div>
                     </div>
                 </div>
@@ -228,45 +238,48 @@ function backToMain() {
         <div class="myDataBox">
             <h2 class="bigWord title">我的数据</h2>
             <div class="whiteBox" style="padding-bottom: 10px;">
-                <div class="dataRow1">
-                    <div class="dataBox" style="margin-left: 8px;
-    margin-right: 27px;">
-                    <el-icon style="color: rgb(255 156 0);">
-                        <Finished />
-                    </el-icon>
-                    <span class="smallWord">今日学习&复习</span>
-                    <div><span>{{ data.todayNum!=null?data.todayNum:0 }}</span><span style="font-size: small;margin-left: 4px;" class="fontGrey smallWord">词</span></div>
+                <div class="dataRow">
+                    <div class="dataBox" >
+                        <el-icon style="color: rgb(255 156 0);">
+                            <Finished />
+                        </el-icon>
+                        <span class="smallWord">今日学习&复习</span>
+                        <div><span>{{ data.todayNum != null ? data.todayNum : 0 }}</span><span
+                                style="font-size: small;margin-left: 4px;" class="fontGrey smallWord">词</span></div>
                     </div>
                     <div class="dataBox">
-                    <el-icon style="color: rgb(231 0 0)">
-                        <TrendCharts />
-                    </el-icon>
-                    <span class="smallWord">累计学习</span>
-                    <div><span>{{ data.allRecitedNum!=null?data.allRecitedNum:0 }}</span><span style="font-size: small;margin-left: 4px;" class="fontGrey smallWord">词</span></div>
+                        <el-icon style="color: rgb(231 0 0)">
+                            <TrendCharts />
+                        </el-icon>
+                        <span class="smallWord">累计学习</span>
+                        <div><span>{{ data.allRecitedNum != null ? data.allRecitedNum : 0 }}</span><span
+                                style="font-size: small;margin-left: 4px;" class="fontGrey smallWord">词</span></div>
                     </div>
                 </div>
-                <div class="dataRow2">
+                <div class="dataRow">
                     <div class="dataBox">
-                    <el-icon style="color: rgb(255 156 0);">
-                        <Timer />
-                    </el-icon>
-                    <span class="smallWord">今日学习时长</span>
-                    <div><span>{{ data.todayTime!=null?data.todayTime:0 }}</span></div>
+                        <el-icon style="color: rgb(255 156 0);">
+                            <Timer />
+                        </el-icon>
+                        <span class="smallWord">今日学习时长</span>
+                        <div><span>{{ todayTime != null ? todayTime : 0 }}</span><span
+                                style="font-size: small;margin-left: 4px;" class="fontGrey smallWord">分钟</span></div>
                     </div>
                     <div class="dataBox">
-                    <el-icon style="color: rgb(231 0 0)">
-                        <Clock />
-                    </el-icon>
-                    <span class="smallWord">累计学习时长</span>
-                    <div><span>{{ data.allTime!=null?data.allTime:0 }}</span></div>
-                    </div>         
+                        <el-icon style="color: rgb(231 0 0)">
+                            <Clock />
+                        </el-icon>
+                        <span class="smallWord">累计学习时长</span>
+                        <div><span>{{ allTime != null ? allTime : 0 }}</span><span
+                                style="font-size: small;margin-left: 4px;" class="fontGrey smallWord">分钟</span></div>
+                    </div>
                 </div>
             </div>
             <div class="whiteBox" style="padding-top: 10px;">
                 <div>
                     <span style="position: relative;top: 4px;left: 15px;">日历</span>
                     <span style="position: relative;top: 4px;right: -355px;">
-                        <span v-show="clicked">累计签到<span style="margin: 0 3px;">{{successiveDay }}</span>天</span>
+                        <span v-show="clicked">累计签到<span style="margin: 0 3px;">{{ successiveDay }}</span>天</span>
                     </span>
                     <el-calendar style="margin-top: 10px;" v-model="value" />
                 </div>
@@ -274,6 +287,4 @@ function backToMain() {
         </div>
     </div>
 </template>
-<style scoped>
-@import './dashboard.css';
-</style>
+<style scoped>@import './dashboard.css';</style>
