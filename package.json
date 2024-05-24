@@ -1,26 +1,27 @@
 {
-  "name": "keixie-summer",
-  "private": true,
-  "version": "0.0.0",
-  "type": "module",
-  "scripts": {
-    "dev": "vite",
-    "build": "vite build",
-    "preview": "vite preview"
-  },
-  "dependencies": {
-    "@element-plus/icons-vue": "^2.1.0",
-    "axios": "^1.4.0",
-    "element-plus": "^2.3.7",
-    "pinia": "^2.1.4",
-    "vue": "^3.2.47",
-    "vue-router": "^4.2.2"
-  },
-  "devDependencies": {
-    "@vitejs/plugin-vue": "^4.1.0",
-    "terser": "^5.19.2",
-    "unplugin-auto-import": "^0.16.4",
-    "unplugin-vue-components": "^0.25.1",
-    "vite": "^4.3.9"
-  }
+    "name": "keixie-summer",
+    "private": true,
+    "version": "0.0.0",
+    "type": "module",
+    "scripts": {
+        "serve": "vue-cli-service serve",
+        "dev": "vite --host 0.0.0.0",
+        "build": "vite build",
+        "preview": "vite preview"
+    },
+    "dependencies": {
+        "@element-plus/icons-vue": "^2.1.0",
+        "axios": "^1.4.0",
+        "element-plus": "^2.3.7",
+        "pinia": "^2.1.4",
+        "vue": "^3.2.47",
+        "vue-router": "^4.2.2"
+    },
+    "devDependencies": {
+        "@vitejs/plugin-vue": "^4.1.0",
+        "terser": "^5.19.2",
+        "unplugin-auto-import": "^0.16.4",
+        "unplugin-vue-components": "^0.25.1",
+        "vite": "^4.3.9"
+    }
 }

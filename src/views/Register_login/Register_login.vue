@@ -1,5 +1,5 @@
 <script setup>
-import { ref, reactive,onMounted } from 'vue';
+import { ref, reactive, onMounted } from 'vue';
 import { useRouter } from "vue-router";
 import axios from "axios";
 import { useUserStore } from "../../stores/User"
@@ -26,6 +26,15 @@ const Request = axios.create({
     timeout: 3000,
     withCredentials: true,
 });
+
+let request = {
+    type: "getRoomList"
+};
+Request.post("/room", request).then(
+    (res) => {
+        console.log(res);
+    })
+
 
 let usernameValidationText = 'Username should be 1-12 Chinese or English characters or numbers'
 let passwordValidationText = 'Password should be English characters or numbers more than 8 words and within 15 words';
@@ -62,17 +71,17 @@ onMounted(() => {
             console.log(res);
             if (res.data.status == 'clear') {
                 ElMessage({
-                        type: "success",
-                        message: "登录认证已重置",
-                        duration: 2000,
-                    });
+                    type: "success",
+                    message: "登录认证已重置",
+                    duration: 2000,
+                });
             }
-            else if (res.data.status != 'new'){
+            else if (res.data.status != 'new') {
                 ElMessage({
-                        type: "error",
-                        message: "出错了",
-                        duration: 2000,
-                    });
+                    type: "error",
+                    message: "出错了",
+                    duration: 2000,
+                });
             }
         })
 })
@@ -135,7 +144,7 @@ function handleLogin() {
         let request = {
             userName: _username,
             password: password.value,
-            lastLoginTime:  yy + '-' + (mm < 10 ? '0' + mm : mm) + '-' + (dd < 10 ? '0' + dd : dd)
+            lastLoginTime: yy + '-' + (mm < 10 ? '0' + mm : mm) + '-' + (dd < 10 ? '0' + dd : dd)
         };
         Request.post("/login", request).then(
             (res) => {
@@ -172,20 +181,20 @@ function handleLogin() {
                             router.push("/main");
                         }, 100);
                         ElMessage({
-                        type: "success",
-                        message: _username + "，好久不见！",
-                        duration: 2000,
-                    });
+                            type: "success",
+                            message: _username + "，好久不见！",
+                            duration: 2000,
+                        });
                     }
                     else {
                         setTimeout(() => {
                             router.push("/dashboard");
                         }, 100);
                         ElMessage({
-                        type: "success",
-                        message: _username + "，好久不见！请先选择一本单词书再开始学习",
-                        duration: 2000,
-                    });
+                            type: "success",
+                            message: _username + "，好久不见！请先选择一本单词书再开始学习",
+                            duration: 2000,
+                        });
                     }
                     //成功通知
 
@@ -238,9 +247,21 @@ function clearForm() {
 function forget() {
     router.push("/forget");
 }
-
+// function handle_success(res) {
+//       console.log(res.data);
+//     //   this.$message.success("图片上传成功");
+//     //   return (this.homeAdvertise.imgUrl = res.data);
+//     }
 </script>
 <template>
+    <!-- <div>
+        <el-upload action="http://localhost:8080/upload"  :on-success="handle_success">
+            <el-button size="small" type="primary">点击上传</el-button>
+            <div slot="tip" class="el-upload__tip">
+                只能上传jpg/png文件，且不超过500kb
+            </div>
+        </el-upload>
+    </div> -->
     <div class="allbox">
         <div class="main" :class="{ 'short': !showRegister, 'tall': showRegister }">
             <div class="new-box" :class="{ 'left': !showRegister, 'mid': showRegister }">
